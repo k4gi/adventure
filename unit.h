@@ -9,4 +9,9 @@ struct unit {
 	int dmg;
 };
 
+struct unit_node {
+	unit data;
+	unit_node *next;
+};
+
 #endif

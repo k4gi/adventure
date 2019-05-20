@@ -11,11 +11,12 @@ int main() {
 	cbreak();
 	noecho();
 	curs_set(0);
+
+	srand(0); //seed random generator
 	
 	int y,x;
 	getmaxyx(stdscr,y,x);
 
-	//int pad_y = y*1.5, pad_x = x*1.5;
 
 	int ypos = 0, xpos = 0; //top left corner of the visible map
 
@@ -25,10 +26,10 @@ int main() {
 	pc.xpos = 2;
 	pc.hp = 99;
 	pc.dmg = 1;
-	//int pc.ypos = 2, pc.xpos = 2; //position of the player
+
+	unit_node *enemies = NULL;
 
 	map_loader dan;
-
 
 	int log_width = 40, hp_height = 3; //size of the hud
 
@@ -40,7 +41,6 @@ int main() {
 	box(hp_win,0,0);
 	box(log_win,0,0);
 
-	//wmove(log_win,y-1,1);
 	scrollok(log_win,true);
 	/*
 	scrolling doesn't play nice with a border it scrolls the border too
@@ -62,8 +62,8 @@ int main() {
 	//input loop
 	char in;
 	do {
+		//player input & handling
 		in = getch();
-
 		switch(in) {
 		//pickup
 		case 'g':
@@ -121,10 +121,85 @@ int main() {
 			wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
 		}
 
+		//enemy action
+		unit_node *curr = enemies;
+		if( curr == NULL ) {
+			//no enemies, high chance of spawn
+			if( rand()%4 == 0 ) {
+				curr = new unit_node;
+				curr->data.sym = '7';
+				//position is monster room of testing_map.dat
+				curr->data.ypos = 7 + rand()%5;
+				curr->data.xpos = 37 + rand()%9;
+
+				curr->data.hp = 2;
+				curr->data.dmg = 1;
+
+				curr->next = NULL;
+
+				mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+			}	
+		} else {
+			while( curr != NULL ) {
+				//move enemy
+				switch(rand()%4) {
+				case 0:
+					if(mvwinch(map,curr->data.ypos-1,curr->data.xpos) != '#') {
+						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
+						curr->data.ypos --;
+						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+					}
+					break;
+				case 2:
+					if(mvwinch(map,curr->data.ypos+1,curr->data.xpos) != '#') {
+						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
+						curr->data.ypos ++;
+						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+					}
+					break;
+				case 3:
+					if(mvwinch(map,curr->data.ypos,curr->data.xpos-1) != '#') {
+						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
+						curr->data.xpos --;
+						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+					}
+					break;
+				case 1:
+					if(mvwinch(map,curr->data.ypos,curr->data.xpos+1) != '#') {
+						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
+						curr->data.xpos ++;
+						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+					}
+					break;
+				}
+				
+				if( curr->next == NULL ) {
+					//chance to spawn new enemy
+					if( rand()%20 == 0 ) {
+						curr = curr->next;
+
+						curr = new unit_node;
+						curr->data.sym = '7';
+						//position is monster room of testing_map.dat
+						curr->data.ypos = 7 + rand()%5;
+						curr->data.xpos = 37 + rand()%9;
+
+						curr->data.hp = 2;
+						curr->data.dmg = 1;
+
+						curr->next = NULL;
+
+						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+					}	
+				}
+				curr = curr->next;
+			}
+		}
+
+		//refresh the screen
 		prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
 		wrefresh(log_win);
-		//mvderwin(view,ypos,xpos);
-		//wrefresh(view);
+		wrefresh(hp_win);
 	} while(in != 'q');
 
 	//wgetch(view); //wait
