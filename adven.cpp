@@ -1,10 +1,18 @@
 #include <ncurses.h>
 #include <cstdlib>
+#include <string>
 
 #include "map_loader.h"
 #include "unit.h"
 
 #define FILENAME "testing_map.dat"
+#define DEBUGGING true
+
+void debug(WINDOW *win,std::string input) {
+	if(DEBUGGING) {
+		wprintw(win,"\ndebug:%s",input.c_str());
+	}
+}
 
 int main() {
 	initscr();
@@ -122,50 +130,57 @@ int main() {
 		}
 
 		//enemy action
+		debug(log_win,"enemy action");
 		unit_node *curr = enemies;
 		if( curr == NULL ) {
 			//no enemies, high chance of spawn
+			debug(log_win,"no enemies");
 			if( rand()%4 == 0 ) {
-				curr = new unit_node;
-				curr->data.sym = '7';
+				debug(log_win,"spawn first enemy");
+				unit_node *new_enemy = new unit_node;
+				new_enemy->data.sym = '7';
 				//position is monster room of testing_map.dat
-				curr->data.ypos = 7 + rand()%5;
-				curr->data.xpos = 37 + rand()%9;
+				new_enemy->data.ypos = 7 + rand()%5;
+				new_enemy->data.xpos = 37 + rand()%9;
 
-				curr->data.hp = 2;
-				curr->data.dmg = 1;
+				new_enemy->data.hp = 2;
+				new_enemy->data.dmg = 1;
 
-				curr->next = NULL;
+				new_enemy->next = NULL;
 
-				mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+				enemies = new_enemy;
+
+				mvwaddch(map,enemies->data.ypos,enemies->data.xpos,enemies->data.sym);
 			}	
 		} else {
+			debug(log_win,"some enemies");
 			while( curr != NULL ) {
 				//move enemy
+				debug(log_win,"moving an enemy");
 				switch(rand()%4) {
 				case 0:
-					if(mvwinch(map,curr->data.ypos-1,curr->data.xpos) != '#') {
+					if(mvwinch(map,curr->data.ypos-1,curr->data.xpos) == '.') {
 						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
 						curr->data.ypos --;
 						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}
 					break;
 				case 2:
-					if(mvwinch(map,curr->data.ypos+1,curr->data.xpos) != '#') {
+					if(mvwinch(map,curr->data.ypos+1,curr->data.xpos) == '.') {
 						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
 						curr->data.ypos ++;
 						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}
 					break;
 				case 3:
-					if(mvwinch(map,curr->data.ypos,curr->data.xpos-1) != '#') {
+					if(mvwinch(map,curr->data.ypos,curr->data.xpos-1) == '.') {
 						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
 						curr->data.xpos --;
 						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}
 					break;
 				case 1:
-					if(mvwinch(map,curr->data.ypos,curr->data.xpos+1) != '#') {
+					if(mvwinch(map,curr->data.ypos,curr->data.xpos+1) == '.') {
 						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
 						curr->data.xpos ++;
 						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
@@ -174,20 +189,26 @@ int main() {
 				}
 				
 				if( curr->next == NULL ) {
+					debug(log_win,"spawn a new enemy?");
 					//chance to spawn new enemy
 					if( rand()%20 == 0 ) {
-						curr = curr->next;
+						debug(log_win,"spawn another enemy");
 
-						curr = new unit_node;
-						curr->data.sym = '7';
+						unit_node *new_enemy = new unit_node;
+
+						new_enemy->data.sym = '7';
 						//position is monster room of testing_map.dat
-						curr->data.ypos = 7 + rand()%5;
-						curr->data.xpos = 37 + rand()%9;
+						new_enemy->data.ypos = 7 + rand()%5;
+						new_enemy->data.xpos = 37 + rand()%9;
 
-						curr->data.hp = 2;
-						curr->data.dmg = 1;
+						new_enemy->data.hp = 2;
+						new_enemy->data.dmg = 1;
 
-						curr->next = NULL;
+						new_enemy->next = NULL;
+
+						curr->next = new_enemy;
+
+						curr = curr->next;
 
 						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}	
