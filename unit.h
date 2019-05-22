@@ -22,6 +22,6 @@ int move_player returns
 1 for no movement
 2 for attack action
 */
-int move_player(WINDOW *map, WINDOW *grid, unit player, int t_ypos, int t_xpos);
+int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
 
 #endif
