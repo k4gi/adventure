@@ -92,35 +92,23 @@ int main() {
 			break;
 		//char movement down here
 		case 'w':
-			if(mvwinch(map,pc.ypos-1,pc.xpos) != '#') {
+			if( move_player(map, dan.getgrid(), pc, pc.ypos+1, pc.xpos) == 0) {
 				if(ypos>0 && pc.ypos-ypos+map_start_y == map_size_y/2) ypos --;
-				mvwaddch(map,pc.ypos,pc.xpos, mvwinch(dan.getgrid(),pc.ypos,pc.xpos) );
-				pc.ypos --;
-				mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
 			}
 			break;
 		case 's':
-			if(mvwinch(map,pc.ypos+1,pc.xpos) != '#') {
+			if( move_player(map, dan.getgrid(), pc, pc.ypos+1, pc.xpos) == 0) {
 				if(ypos+map_size_y < dan.gety() && pc.ypos-ypos+map_start_y == map_size_y/2) ypos ++;
-				mvwaddch(map,pc.ypos,pc.xpos, mvwinch(dan.getgrid(),pc.ypos,pc.xpos) );
-				pc.ypos ++;
-				mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
 			}
 			break;
 		case 'a':
-			if(mvwinch(map,pc.ypos,pc.xpos-1) != '#') {
+			if( move_player(map, dan.getgrid(), pc, pc.ypos, pc.xpos-1) == 0) {
 				if(xpos>0 && pc.xpos-xpos+map_start_x == map_size_x/2) xpos --;
-				mvwaddch(map,pc.ypos,pc.xpos, mvwinch(dan.getgrid(),pc.ypos,pc.xpos) );
-				pc.xpos --;
-				mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
 			}
 			break;
 		case 'd':
-			if(mvwinch(map,pc.ypos,pc.xpos+1) != '#') {
+			if( move_player(map, dan.getgrid(), pc, pc.ypos, pc.xpos+1) == 0) {
 				if(xpos+map_size_x < dan.getx() && pc.xpos-xpos+map_start_x == map_size_x/2) xpos ++;
-				mvwaddch(map,pc.ypos,pc.xpos, mvwinch(dan.getgrid(),pc.ypos,pc.xpos) );
-				pc.xpos ++;
-				mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
 			}
 			break;
 		}
