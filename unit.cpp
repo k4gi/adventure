@@ -16,3 +16,31 @@ int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos)
 		return 0;
 	}
 }
+
+int attack(WINDOW *log, unit *attacker, unit *defender) {
+	defender->hp -= attacker->dmg;
+	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",attacker->name.c_str(),attacker->dmg,defender->name.c_str(),defender->hp);
+	if(defender->hp <= 0) {
+		wprintw(log,"\nThe %s is defeated!",defender->name.c_str());
+		return 2;
+	} else {
+		attacker->hp -= defender->dmg;
+		wprintw(log,"\nThe %s retaliates for %d, reducing the %s to %d HP!",defender->name.c_str(),defender->dmg,attacker->name.c_str(),attacker->hp);
+		if(attacker->hp <= 0) {
+			wprintw(log,"\nThe %s is defeated!",attacker->name.c_str());
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+}
+
+unit *find_unit(unit_node *list, int ypos, int xpos) {
+	unit_node *curr = list;
+	while( curr != NULL ) {
+		if(curr->data.ypos == ypos && curr->data.xpos == xpos) return &curr->data;
+		curr = curr->next;
+	}
+	return NULL;
+}
+

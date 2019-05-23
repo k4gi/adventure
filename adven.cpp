@@ -7,9 +7,10 @@
 
 #define FILENAME "testing_map.dat"
 #define DEBUGGING true
+#define DEBUGGING_LEVEL 1
 
-void debug(WINDOW *win,std::string input) {
-	if(DEBUGGING) {
+void debug(WINDOW *win,int level,std::string input) {
+	if(DEBUGGING && level >= DEBUGGING_LEVEL) {
 		wprintw(win,"\ndebug:%s",input.c_str());
 	}
 }
@@ -29,6 +30,7 @@ int main() {
 	int ypos = 0, xpos = 0; //top left corner of the visible map
 
 	unit pc;
+	pc.name = "player";
 	pc.sym = '@';
 	pc.ypos = 2;
 	pc.xpos = 2;
@@ -95,24 +97,60 @@ int main() {
 			switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
 			case 0:
 				if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
+				break;
+			case 1:
+				wprintw(log_win,"\nYou bonk into the wall!");
+				break;
+			case 2:
+				attack(log_win, &pc, find_unit(enemies, pc.ypos-1, pc.xpos) );
+				break;
+			default:
+				debug(log_win,99,"Something broke...");
 			}
 			break;
 		case 's':
 			switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
 			case 0:
 				if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
+				break;
+			case 1:
+				wprintw(log_win,"\nYou bonk into the wall!");
+				break;
+			case 2:
+				attack(log_win, &pc, find_unit(enemies, pc.ypos+1, pc.xpos) );
+				break;
+			default:
+				debug(log_win,99,"Something broke...");
 			}
 			break;
 		case 'a':
 			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
 			case 0:
 				if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
+				break;
+			case 1:
+				wprintw(log_win,"\nYou bonk into the wall!");
+				break;
+			case 2:
+				attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos-1) );
+				break;
+			default:
+				debug(log_win,99,"Something broke...");
 			}
 			break;
 		case 'd':
 			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
 			case 0:
 				if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
+				break;
+			case 1:
+				wprintw(log_win,"\nYou bonk into the wall!");
+				break;
+			case 2:
+				attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos+1) );
+				break;
+			default:
+				debug(log_win,99,"Something broke...");
 			}
 			break;
 		}
@@ -122,14 +160,15 @@ int main() {
 		}
 
 		//enemy action
-		debug(log_win,"enemy action");
+		debug(log_win,0,"enemy action");
 		unit_node *curr = enemies;
 		if( curr == NULL ) {
 			//no enemies, high chance of spawn
-			debug(log_win,"no enemies");
+			debug(log_win,0,"no enemies");
 			if( rand()%4 == 0 ) {
-				debug(log_win,"spawn first enemy");
+				debug(log_win,0,"spawn first enemy");
 				unit_node *new_enemy = new unit_node;
+				new_enemy->data.name = "seven";
 				new_enemy->data.sym = '7';
 				//position is monster room of testing_map.dat
 				new_enemy->data.ypos = 7 + rand()%5;
@@ -145,10 +184,10 @@ int main() {
 				mvwaddch(map,enemies->data.ypos,enemies->data.xpos,enemies->data.sym);
 			}	
 		} else {
-			debug(log_win,"some enemies");
+			debug(log_win,0,"some enemies");
 			while( curr != NULL ) {
 				//move enemy
-				debug(log_win,"moving an enemy");
+				debug(log_win,0,"moving an enemy");
 				switch(rand()%4) {
 				case 0:
 					if(mvwinch(map,curr->data.ypos-1,curr->data.xpos) == '.') {
@@ -181,13 +220,13 @@ int main() {
 				}
 				
 				if( curr->next == NULL ) {
-					debug(log_win,"spawn a new enemy?");
+					debug(log_win,0,"spawn a new enemy?");
 					//chance to spawn new enemy
 					if( rand()%20 == 0 ) {
-						debug(log_win,"spawn another enemy");
+						debug(log_win,0,"spawn another enemy");
 
 						unit_node *new_enemy = new unit_node;
-
+						new_enemy->data.name = "seven";
 						new_enemy->data.sym = '7';
 						//position is monster room of testing_map.dat
 						new_enemy->data.ypos = 7 + rand()%5;
