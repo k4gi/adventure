@@ -92,23 +92,27 @@ int main() {
 			break;
 		//char movement down here
 		case 'w':
-			if( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) == 0) {
-				if(ypos>0 && pc.ypos-ypos+map_start_y == map_size_y/2) ypos --;
+			switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
+			case 0:
+				if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
 			}
 			break;
 		case 's':
-			if( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) == 0) {
-				if(ypos+map_size_y < dan.gety() && pc.ypos-ypos+map_start_y == map_size_y/2) ypos ++;
+			switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
+			case 0:
+				if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
 			}
 			break;
 		case 'a':
-			if( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) == 0) {
-				if(xpos>0 && pc.xpos-xpos+map_start_x == map_size_x/2) xpos --;
+			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
+			case 0:
+				if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
 			}
 			break;
 		case 'd':
-			if( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) == 0) {
-				if(xpos+map_size_x < dan.getx() && pc.xpos-xpos+map_start_x == map_size_x/2) xpos ++;
+			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
+			case 0:
+				if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
 			}
 			break;
 		}
