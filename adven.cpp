@@ -109,7 +109,7 @@ int main() {
 					//game over!
 					break;
 				case 2:
-					delete_unit(enemies, pc.ypos-1, pc.xpos);
+					if( delete_unit(enemies, pc.ypos-1, pc.xpos) == 1) enemies = NULL;
 					mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
 					break;
 				default:

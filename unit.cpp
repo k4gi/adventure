@@ -44,14 +44,14 @@ unit *find_unit(unit_node *list, int ypos, int xpos) {
 	return NULL;
 }
 
-void delete_unit(unit_node *list, int ypos, int xpos) {
+int delete_unit(unit_node *list, int ypos, int xpos) {
 	if( list == NULL ) {
-		return;
+		return 2;
 	} else if( list->data.ypos == ypos && list->data.xpos == xpos ) {
 		unit_node *curr = list;
 		list = list->next;
 		free(curr);
-		return;
+		return 1;
 	}
 	unit_node *prev = list;
 	unit_node *curr = list->next;
@@ -59,7 +59,7 @@ void delete_unit(unit_node *list, int ypos, int xpos) {
 		if( curr->data.ypos == ypos && curr->data.xpos == xpos ) {
 			prev->next = curr->next;
 			free(curr);
-			return;
+			return 0;
 		}
 		prev = curr;
 		curr = curr->next;
