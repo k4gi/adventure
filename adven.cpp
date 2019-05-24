@@ -37,7 +37,7 @@ int main() {
 	pc.hp = 99;
 	pc.dmg = 1;
 
-	unit_node *enemies = NULL;
+	unit_list enemies = unit_list();
 
 	map_loader dan;
 
@@ -109,7 +109,7 @@ int main() {
 					//game over!
 					break;
 				case 2:
-					if( delete_unit(enemies, pc.ypos-1, pc.xpos) == 1) enemies = NULL;
+					delete_unit(enemies, pc.ypos-1, pc.xpos);
 					mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
 					break;
 				default:

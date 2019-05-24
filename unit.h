@@ -34,13 +34,20 @@ int attack returns
 */
 int attack(WINDOW *log, unit *attacker, unit *defender);
 
-unit *find_unit(unit_node *list, int ypos, int xpos);
-/*
-int delete_unit returns
-0 for standard delete
-1 for deleting first
-2 for empty list
-*/
-int delete_unit(unit_node *list, int ypos, int xpos);
+class unit_list {
+	unit_node *head;
+public:
+	unit_list();
+	void add_unit(int ypos, int xpos);
+	unit *find_unit(int ypos, int xpos);
+
+	/*
+	int delete_unit returns
+	0 for standard delete
+	1 for deleting first
+	2 for empty list
+	*/
+	int delete_unit(int ypos, int xpos);
+}
 
 #endif

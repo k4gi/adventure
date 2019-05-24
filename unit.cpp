@@ -35,8 +35,12 @@ int attack(WINDOW *log, unit *attacker, unit *defender) {
 	}
 }
 
-unit *find_unit(unit_node *list, int ypos, int xpos) {
-	unit_node *curr = list;
+unit_list::unit_list() {
+	head = NULL;
+}
+
+unit *unit_list::find_unit(int ypos, int xpos) {
+	unit_node *curr = head;
 	while( curr != NULL ) {
 		if(curr->data.ypos == ypos && curr->data.xpos == xpos) return &curr->data;
 		curr = curr->next;
@@ -44,17 +48,17 @@ unit *find_unit(unit_node *list, int ypos, int xpos) {
 	return NULL;
 }
 
-int delete_unit(unit_node *list, int ypos, int xpos) {
-	if( list == NULL ) {
+int unit_list::delete_unit(int ypos, int xpos) {
+	if( head == NULL ) {
 		return 2;
-	} else if( list->data.ypos == ypos && list->data.xpos == xpos ) {
-		unit_node *curr = list;
-		list = list->next;
+	} else if( head->data.ypos == ypos && head->data.xpos == xpos ) {
+		unit_node *curr = head;
+		head = head->next;
 		free(curr);
 		return 1;
 	}
-	unit_node *prev = list;
-	unit_node *curr = list->next;
+	unit_node *prev = head;
+	unit_node *curr = head->next;
 	while( curr != NULL ) {
 		if( curr->data.ypos == ypos && curr->data.xpos == xpos ) {
 			prev->next = curr->next;
