@@ -102,7 +102,19 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				attack(log_win, &pc, find_unit(enemies, pc.ypos-1, pc.xpos) );
+				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos-1, pc.xpos) ) ) {
+				case 0:
+					break;
+				case 1:
+					//game over!
+					break;
+				case 2:
+					delete_unit(enemies, pc.ypos-1, pc.xpos);
+					mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
+					break;
+				default:
+					debug(log_win,99,"Something broke!");
+				}
 				break;
 			default:
 				debug(log_win,99,"Something broke...");
@@ -117,7 +129,19 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				attack(log_win, &pc, find_unit(enemies, pc.ypos+1, pc.xpos) );
+				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos+1, pc.xpos) ) ) {
+				case 0:
+					break;
+				case 1:
+					//game over!
+					break;
+				case 2:
+					delete_unit(enemies, pc.ypos+1, pc.xpos);
+					mvwaddch(map, pc.ypos+1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos+1, pc.xpos) );
+					break;
+				default:
+					debug(log_win,99,"Something broke!");
+				}
 				break;
 			default:
 				debug(log_win,99,"Something broke...");
@@ -132,7 +156,19 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos-1) );
+				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos-1) ) ) {
+				case 0:
+					break;
+				case 1:
+					//game over!
+					break;
+				case 2:
+					delete_unit(enemies, pc.ypos, pc.xpos-1);
+					mvwaddch(map, pc.ypos, pc.xpos-1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos-1) );
+					break;
+				default:
+					debug(log_win,99,"Something broke!");
+				}
 				break;
 			default:
 				debug(log_win,99,"Something broke...");
@@ -147,7 +183,19 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos+1) );
+				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos+1) ) ) {
+				case 0:
+					break;
+				case 1:
+					//game over!
+					break;
+				case 2:
+					delete_unit(enemies, pc.ypos, pc.xpos+1);
+					mvwaddch(map, pc.ypos, pc.xpos+1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos+1) );
+					break;
+				default:
+					debug(log_win,99,"Something broke!");
+				}
 				break;
 			default:
 				debug(log_win,99,"Something broke...");

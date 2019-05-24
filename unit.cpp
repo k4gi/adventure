@@ -44,3 +44,24 @@ unit *find_unit(unit_node *list, int ypos, int xpos) {
 	return NULL;
 }
 
+void delete_unit(unit_node *list, int ypos, int xpos) {
+	if( list == NULL ) {
+		return;
+	} else if( list->data.ypos == ypos && list->data.xpos == xpos ) {
+		unit_node *curr = list;
+		list = list->next;
+		free(curr);
+		return;
+	}
+	unit_node *prev = list;
+	unit_node *curr = list->next;
+	while( curr != NULL ) {
+		if( curr->data.ypos == ypos && curr->data.xpos == xpos ) {
+			prev->next = curr->next;
+			free(curr);
+			return;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+}

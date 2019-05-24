@@ -36,4 +36,6 @@ int attack(WINDOW *log, unit *attacker, unit *defender);
 
 unit *find_unit(unit_node *list, int ypos, int xpos);
 
+void delete_unit(unit_node *list, int ypos, int xpos);
+
 #endif
