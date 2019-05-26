@@ -39,7 +39,7 @@ class unit_list {
 	unit_node *head;
 public:
 	unit_list();
-	void add_unit(int type, int ypos, int xpos);
+	int add_unit(WINDOW *map, int type, int ypos, int xpos);
 	unit *find_unit(int ypos, int xpos);
 
 	/*

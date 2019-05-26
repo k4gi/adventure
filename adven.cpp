@@ -4,8 +4,11 @@
 
 #include "map_loader.h"
 #include "unit.h"
+#include "roman.h"
 
 #define FILENAME "testing_map.dat"
+#define SPAWN_ATTEMPTS 5
+
 #define DEBUGGING true
 #define DEBUGGING_LEVEL 1
 
@@ -65,13 +68,27 @@ int main() {
 	wprintw(log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
 
 	refresh();
-	wrefresh(hp_win);
-	wrefresh(log_win);
-	prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
 	
 	//input loop
 	char in;
 	do {
+		for(int i=1; i<(x-log_width)-2; i++) {
+			mvwaddch(hp_win,1,i,' ');
+		}
+
+		mvwprintw(hp_win,1,1,roman(pc.hp).c_str());
+
+		if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
+			wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
+		}
+		
+		enemies.draw(map);
+
+		//refresh the screen
+		prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
+		wrefresh(log_win);
+		wrefresh(hp_win);
+
 		//player input & handling
 		in = getch();
 		switch(in) {
@@ -203,10 +220,6 @@ int main() {
 			break;
 		}
 
-		if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
-			wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
-		}
-
 		//enemy action
 		debug(log_win,0,"enemy action");
 		unit_node *curr = enemies.gethead();
@@ -216,8 +229,9 @@ int main() {
 			if( rand()%4 == 0 ) {
 				debug(log_win,0,"spawn first enemy");
 				//position is monster room of testing_map.dat
-				enemies.add_unit(7, 7+rand()%5, 37+rand()%9);
-				//mvwaddch(map,enemies->data.ypos,enemies->data.xpos,enemies->data.sym);
+				for(int i=0; i<SPAWN_ATTEMPTS; i++) {
+					if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
+				}
 			}	
 		} else {
 			debug(log_win,0,"some enemies");
@@ -245,20 +259,15 @@ int main() {
 					if( rand()%20 == 0 ) {
 						debug(log_win,0,"spawn another enemy");
 						//position is monster room of testing_map.dat
-						enemies.add_unit(7, 7+rand()%5, 37+rand()%9);
+						for(int i=0; i<SPAWN_ATTEMPTS; i++) {
+							if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
+						}
 						curr = curr->next;
-						//mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}	
 				}
 				curr = curr->next;
 			}
 		}
-		enemies.draw(map);
-
-		//refresh the screen
-		prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
-		wrefresh(log_win);
-		wrefresh(hp_win);
 	} while(in != 'q');
 
 	//wgetch(view); //wait

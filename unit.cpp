@@ -61,7 +61,8 @@ unit_list::unit_list() {
 	head = NULL;
 }
 
-void unit_list::add_unit(int type, int ypos, int xpos) {
+int unit_list::add_unit(WINDOW *map, int type, int ypos, int xpos) {
+	if( mvwinch(map, ypos, xpos) != '.' ) return 1;
 	unit_node *new_enemy = new unit_node;
 	new_enemy->data.ypos = ypos;
 	new_enemy->data.xpos = xpos;
@@ -85,6 +86,7 @@ void unit_list::add_unit(int type, int ypos, int xpos) {
 		}
 		curr->next = new_enemy;
 	}
+	return 0;
 }
 
 unit *unit_list::find_unit(int ypos, int xpos) {
