@@ -25,6 +25,7 @@ int move_player returns
 2 for attack action
 */
 int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
+int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
 
 /*
 int attack returns
@@ -38,7 +39,7 @@ class unit_list {
 	unit_node *head;
 public:
 	unit_list();
-	void add_unit(int ypos, int xpos);
+	void add_unit(int type, int ypos, int xpos);
 	unit *find_unit(int ypos, int xpos);
 
 	/*
@@ -48,6 +49,7 @@ public:
 	2 for empty list
 	*/
 	int delete_unit(int ypos, int xpos);
-}
+	unit_node *gethead();
+};
 
 #endif

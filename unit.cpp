@@ -17,6 +17,23 @@ int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos)
 	}
 }
 
+int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos) {
+	switch( mvwinch(map, t_ypos, t_xpos) ) {
+	case '#':
+		//wall
+		return 1;
+	case '@':
+		//attack
+		return 2;
+	default:
+		mvwaddch(map, enemy->ypos, enemy->xpos, mvwinch(grid, enemy->ypos, enemy->xpos) );
+		enemy->ypos = t_ypos;
+		enemy->xpos = t_xpos;
+		mvwaddch(map, enemy->ypos, enemy->xpos, enemy->sym);
+		return 0;
+	}
+}
+
 int attack(WINDOW *log, unit *attacker, unit *defender) {
 	defender->hp -= attacker->dmg;
 	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",attacker->name.c_str(),attacker->dmg,defender->name.c_str(),defender->hp);
@@ -37,6 +54,32 @@ int attack(WINDOW *log, unit *attacker, unit *defender) {
 
 unit_list::unit_list() {
 	head = NULL;
+}
+
+void unit_list::add_unit(int type, int ypos, int xpos) {
+	unit_node *new_enemy = new unit_node;
+	new_enemy->data.ypos = ypos;
+	new_enemy->data.xpos = xpos;
+	new_enemy->next = NULL;
+
+	switch(type) {
+	case 7:
+	default:
+		new_enemy->data.name = "seven";
+		new_enemy->data.sym = '7';
+		new_enemy->data.hp = 2;
+		new_enemy->data.dmg = 1;
+	}
+
+	if(head == NULL) {
+		head = new_enemy;
+	} else {
+		unit_node *curr = head;
+		while(curr->next != NULL) {
+			curr = curr->next;
+		}
+		curr->next = new_enemy;
+	}
 }
 
 unit *unit_list::find_unit(int ypos, int xpos) {
@@ -68,4 +111,9 @@ int unit_list::delete_unit(int ypos, int xpos) {
 		prev = curr;
 		curr = curr->next;
 	}
+	return 3;
+}
+
+unit_node *unit_list::gethead() {
+	return head;
 }

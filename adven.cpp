@@ -102,14 +102,14 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos-1, pc.xpos) ) ) {
+				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
 				case 0:
 					break;
 				case 1:
 					//game over!
 					break;
 				case 2:
-					delete_unit(enemies, pc.ypos-1, pc.xpos);
+					enemies.delete_unit(pc.ypos-1, pc.xpos);
 					mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
 					break;
 				default:
@@ -129,14 +129,14 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos+1, pc.xpos) ) ) {
+				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos+1, pc.xpos) ) ) {
 				case 0:
 					break;
 				case 1:
 					//game over!
 					break;
 				case 2:
-					delete_unit(enemies, pc.ypos+1, pc.xpos);
+					enemies.delete_unit(pc.ypos+1, pc.xpos);
 					mvwaddch(map, pc.ypos+1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos+1, pc.xpos) );
 					break;
 				default:
@@ -156,14 +156,14 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos-1) ) ) {
+				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos-1) ) ) {
 				case 0:
 					break;
 				case 1:
 					//game over!
 					break;
 				case 2:
-					delete_unit(enemies, pc.ypos, pc.xpos-1);
+					enemies.delete_unit(pc.ypos, pc.xpos-1);
 					mvwaddch(map, pc.ypos, pc.xpos-1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos-1) );
 					break;
 				default:
@@ -183,14 +183,14 @@ int main() {
 				wprintw(log_win,"\nYou bonk into the wall!");
 				break;
 			case 2:
-				switch( attack(log_win, &pc, find_unit(enemies, pc.ypos, pc.xpos+1) ) ) {
+				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos+1) ) ) {
 				case 0:
 					break;
 				case 1:
 					//game over!
 					break;
 				case 2:
-					delete_unit(enemies, pc.ypos, pc.xpos+1);
+					enemies.delete_unit(pc.ypos, pc.xpos+1);
 					mvwaddch(map, pc.ypos, pc.xpos+1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos+1) );
 					break;
 				default:
@@ -209,27 +209,15 @@ int main() {
 
 		//enemy action
 		debug(log_win,0,"enemy action");
-		unit_node *curr = enemies;
+		unit_node *curr = enemies.gethead();
 		if( curr == NULL ) {
 			//no enemies, high chance of spawn
 			debug(log_win,0,"no enemies");
 			if( rand()%4 == 0 ) {
 				debug(log_win,0,"spawn first enemy");
-				unit_node *new_enemy = new unit_node;
-				new_enemy->data.name = "seven";
-				new_enemy->data.sym = '7';
 				//position is monster room of testing_map.dat
-				new_enemy->data.ypos = 7 + rand()%5;
-				new_enemy->data.xpos = 37 + rand()%9;
-
-				new_enemy->data.hp = 2;
-				new_enemy->data.dmg = 1;
-
-				new_enemy->next = NULL;
-
-				enemies = new_enemy;
-
-				mvwaddch(map,enemies->data.ypos,enemies->data.xpos,enemies->data.sym);
+				enemies.add_unit(7, 7+rand()%5, 37+rand()%9);
+				//mvwaddch(map,enemies->data.ypos,enemies->data.xpos,enemies->data.sym);
 			}	
 		} else {
 			debug(log_win,0,"some enemies");
@@ -238,32 +226,16 @@ int main() {
 				debug(log_win,0,"moving an enemy");
 				switch(rand()%4) {
 				case 0:
-					if(mvwinch(map,curr->data.ypos-1,curr->data.xpos) == '.') {
-						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
-						curr->data.ypos --;
-						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
-					}
+					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos-1, curr->data.xpos);
 					break;
 				case 2:
-					if(mvwinch(map,curr->data.ypos+1,curr->data.xpos) == '.') {
-						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
-						curr->data.ypos ++;
-						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
-					}
+					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos+1, curr->data.xpos);
 					break;
 				case 3:
-					if(mvwinch(map,curr->data.ypos,curr->data.xpos-1) == '.') {
-						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
-						curr->data.xpos --;
-						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
-					}
+					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos-1);
 					break;
 				case 1:
-					if(mvwinch(map,curr->data.ypos,curr->data.xpos+1) == '.') {
-						mvwaddch(map,curr->data.ypos,curr->data.xpos, mvwinch(dan.getgrid(),curr->data.ypos,curr->data.xpos) );
-						curr->data.xpos ++;
-						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
-					}
+					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos+1);
 					break;
 				}
 				
@@ -272,24 +244,10 @@ int main() {
 					//chance to spawn new enemy
 					if( rand()%20 == 0 ) {
 						debug(log_win,0,"spawn another enemy");
-
-						unit_node *new_enemy = new unit_node;
-						new_enemy->data.name = "seven";
-						new_enemy->data.sym = '7';
 						//position is monster room of testing_map.dat
-						new_enemy->data.ypos = 7 + rand()%5;
-						new_enemy->data.xpos = 37 + rand()%9;
-
-						new_enemy->data.hp = 2;
-						new_enemy->data.dmg = 1;
-
-						new_enemy->next = NULL;
-
-						curr->next = new_enemy;
-
+						enemies.add_unit(7, 7+rand()%5, 37+rand()%9);
 						curr = curr->next;
-
-						mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
+						//mvwaddch(map,curr->data.ypos,curr->data.xpos,curr->data.sym);
 					}	
 				}
 				curr = curr->next;
