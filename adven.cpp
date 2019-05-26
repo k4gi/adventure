@@ -253,6 +253,7 @@ int main() {
 				curr = curr->next;
 			}
 		}
+		enemies.draw(map);
 
 		//refresh the screen
 		prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);

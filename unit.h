@@ -50,6 +50,7 @@ public:
 	*/
 	int delete_unit(int ypos, int xpos);
 	unit_node *gethead();
+	void draw(WINDOW *map);
 };
 
 #endif
