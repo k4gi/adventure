@@ -6,15 +6,17 @@ dialog_selector *dialog::add_selector(int choices[], int choices_size) {
 	new_selector->prev = new_selector;
 	new_selector->next = new_selector;
 	
+	dialog_selector *curr;
 	dialog_selector *prev = new_selector;
 	for(int i=1;i<choices_size;i++) {
-		dialog_selector *curr = new dialog_selector;
+		curr = new dialog_selector;
 		curr->line = choices[i];
 		curr->prev = prev;
 		curr->next = new_selector;
 		prev->next = curr;
 		prev = curr;
 	}
+	new_selector->prev = curr;
 
 	return new_selector;
 }
@@ -61,14 +63,17 @@ void dialog::refresh_win() {
 	getmaxyx(top->data,y,x);
 
 	for(int i=0; i<y; i++) {
-		chtype thisline[x];
-		mvwinchstr(top->data, i, 0, thisline);
+		//chtype *thisline = (chtype *) malloc( sizeof(chtype)*x );
+		//mvwinchstr(top->data, i, 0, thisline);
+		char *thisline = (char *) malloc( sizeof(char)*x );
+		mvwinstr(top->data, i, 0, thisline);
 		if(i != top->selector->line) {
 			attrset(A_NORMAL);
 		} else {
 			attrset(A_REVERSE);
 		}
-		mvwaddchstr(top->data, i, 0, thisline);
+		//mvwaddchstr(top->data, i, 0, thisline);
+		mvwaddstr(top->data, i, 0, thisline);
 		free(thisline);
 	}
 	attrset(A_NORMAL);

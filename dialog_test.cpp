@@ -11,15 +11,16 @@ int main() {
 
 	int border = 10;
 	
+	int chcs[4] = {2,3,4,6};
+	int chcs_size = 4;
+	
 	WINDOW *hello = newwin(y-border*2,x-border*2,border,border);
 	mvwaddstr(hello,0,0,"HELLO THERE I AM COMPUTER");
-	mvwaddstr(hello,10,0,"CHOICE ONE");
-	mvwaddstr(hello,11,0,"CHOICE TWO");
-	mvwaddstr(hello,12,0,"CHOICE THREE");
-	mvwaddstr(hello,15,0,"choice four");
+	mvwaddstr(hello,chcs[0],0,"CHOICE ONE");
+	mvwaddstr(hello,chcs[1],0,"CHOICE TWO");
+	mvwaddstr(hello,chcs[2],0,"CHOICE THREE");
+	mvwaddstr(hello,chcs[3],0,"choice four");
 
-	int chcs[4] = {10,11,12,15};
-	int chcs_size = 4;
 
 	dialog talk = dialog(hello, chcs, chcs_size);
 
@@ -35,6 +36,7 @@ int main() {
 			talk.move_down();
 			break;
 		}
+		mvwprintw(talk.get_win(),1,0,"select:%d",talk.select());
 	} while(in != 'q');
 
 	endwin();
