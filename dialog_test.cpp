@@ -40,7 +40,11 @@ int main() {
 	char in = 'q';
 	do{
 		talk.refresh_win();
-		in = wgetch(talk.get_win());
+		if(talk.get_win() != NULL) {
+			in = wgetch(talk.get_win());
+		} else {
+			in = getch();
+		}
 		switch(in) {
 		case 'w':
 			talk.move_up();
@@ -53,6 +57,11 @@ int main() {
 			switch(level) {
 			case 0:
 				switch(talk.select()) {
+				case 4:
+					//pop last window
+					talk.pop_win();
+					level = -1;
+					break;
 				case 6:
 					talk.add_win(press,chcs2,chcs2_size);
 					level = 1;

@@ -21,6 +21,9 @@ dialog_selector *dialog::add_selector(int choices[], int choices_size) {
 	return new_selector;
 }
 
+dialog::dialog() {
+	top = NULL;
+}
 
 dialog::dialog(WINDOW *win, int choices[], int choices_size) {
 	dialog_win *new_node = new dialog_win;
@@ -47,40 +50,54 @@ void dialog::pop_win() {
 }
 
 int dialog::select() {
-	return top->selector->line;
+	if(top != NULL) {
+		return top->selector->line;
+	} else {
+		return -1;
+	}
 }
 
 void dialog::move_up() {
-	top->selector = top->selector->prev;
+	if(top != NULL) {
+		top->selector = top->selector->prev;
+	}
 }
 
 void dialog::move_down() {
-	top->selector = top->selector->next;
+	if(top != NULL) {
+		top->selector = top->selector->next;
+	}
 }
 
 void dialog::refresh_win() {
-	int y,x;
-	getmaxyx(top->data,y,x);
+	if(top != NULL) {
+		int y,x;
+		getmaxyx(top->data,y,x);
 
-	for(int i=0; i<y; i++) {
-		//chtype *thisline = (chtype *) malloc( sizeof(chtype)*x );
-		//mvwinchstr(top->data, i, 0, thisline);
-		char *thisline = (char *) malloc( sizeof(char)*(x+1) );
-		mvwinstr(top->data, i, 0, thisline);
-		if(i != top->selector->line) {
-			wattroff(top->data, A_REVERSE);
-		} else {
-			wattron(top->data, A_REVERSE);
+		for(int i=0; i<y; i++) {
+			//chtype *thisline = (chtype *) malloc( sizeof(chtype)*x );
+			//mvwinchstr(top->data, i, 0, thisline);
+			char *thisline = (char *) malloc( sizeof(char)*(x+1) );
+			mvwinstr(top->data, i, 0, thisline);
+			if(i != top->selector->line) {
+				wattroff(top->data, HIGHLIGHTING);
+			} else {
+				wattron(top->data, HIGHLIGHTING);
+			}
+			//mvwaddchstr(top->data, i, 0, thisline);
+			mvwaddstr(top->data, i, 0, thisline);
+			free(thisline);
 		}
-		//mvwaddchstr(top->data, i, 0, thisline);
-		mvwaddstr(top->data, i, 0, thisline);
-		free(thisline);
-	}
-	wattrset(top->data, A_NORMAL);
+		wattrset(top->data, A_NORMAL);
 
-	wrefresh(top->data);
+		wrefresh(top->data);
+	}
 }
 
 WINDOW *dialog::get_win() {
-	return top->data;
+	if(top != NULL) {
+		return top->data;
+	} else {
+		return NULL;
+	}
 }

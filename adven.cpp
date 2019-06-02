@@ -5,6 +5,7 @@
 #include "map_loader.h"
 #include "unit.h"
 #include "roman.h"
+#include "dialog.h"
 
 #define FILENAME "testing_map.dat"
 #define SPAWN_ATTEMPTS 5
@@ -68,156 +69,219 @@ int main() {
 	wprintw(log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
 
 	refresh();
+
+	//dialog windows here
+
+	dialog di = dialog();
+
+	int dialog_level = 0; //1 or greater when a dialog is open
+	int dialog_height = 6;
+	int dialog_width = 40;
+	WINDOW *talk_to_rose = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
+	mvwprintw(talk_to_rose, 1, 1, "Hello there. My name is Rose. I don't have much to say right now.");
+	mvwprintw(talk_to_rose, 3, 1, "OK");
+	mvwprintw(talk_to_rose, 4, 1, "(empty)");
+	//box(talk_to_rose,0,0);
+	int talk_to_rose_choices[2] = {3,4};
+	int talk_to_rose_choices_size = 2;
+	mvwaddch(map, 9, 25, '@'); //rose
 	
 	//input loop
 	char in;
 	do {
-		for(int i=1; i<(x-log_width)-2; i++) {
-			mvwaddch(hp_win,1,i,' ');
-		}
 
-		mvwprintw(hp_win,1,1,roman(pc.hp).c_str());
 
-		if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
-			wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
-		}
-		
-		enemies.draw(map);
+		if( dialog_level > 0 ) { //dialogs!
+			//refresh the screen
+			di.refresh_win();
 
-		//refresh the screen
-		prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
-		wrefresh(log_win);
-		wrefresh(hp_win);
+			//player input & handling
+			in = wgetch(di.get_win());
+			mvwprintw(di.get_win(),0,0,"%d",di.select());
+			switch(in) {
+			case 'w':
+				di.move_up();
+				break;
+			case 's':
+				di.move_down();
+				break;
+			case ' ':
+			case '\n':
+				switch(dialog_level) {
+				case '1': //rose
+					//if(talk_to_rose_choices[0] == di.select()) {
+					if(true) {
+						di.pop_win();
+						dialog_level = 0;
+					}
+					break;
+				}
+				break;
+			}
+		} else { //free movement
+			//refresh the screen
+			for(int i=1; i<(x-log_width)-2; i++) {
+				mvwaddch(hp_win,1,i,' ');
+			}
 
-		//player input & handling
-		in = getch();
-		switch(in) {
-		//pickup
-		case 'g':
+			mvwprintw(hp_win,1,1,roman(pc.hp).c_str());
+
 			if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
-				//inventory management..?
-				mvwaddch(dan.getgrid(),pc.ypos,pc.xpos,'.');
-				wprintw(log_win,"\nYou grab the dollar sign!");
-			} else {
-				wprintw(log_win,"\nNothing here...");
+				wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
 			}
-			break;
-		//log testing
-		case 'l':
-			wprintw(log_win,"\nHello there");
-			break;
-		case 'k':
-			wprintw(log_win,"\nGeneral Kenobi");
-			break;
-		//char movement down here
-		case 'w':
-			switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
-			case 0:
-				if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
-				break;
-			case 1:
-				wprintw(log_win,"\nYou bonk into the wall!");
-				break;
-			case 2:
-				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
-				case 0:
-					break;
-				case 1:
-					//game over!
-					break;
-				case 2:
-					enemies.delete_unit(pc.ypos-1, pc.xpos);
-					mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
-					break;
-				default:
-					debug(log_win,99,"Something broke!");
+			
+			enemies.draw(map);
+
+			prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
+			wrefresh(log_win);
+			wrefresh(hp_win);
+			
+			//player input & handling
+			in = getch();
+			switch(in) {
+			//pickup
+			case 'g':
+				if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
+					//inventory management..?
+					mvwaddch(dan.getgrid(),pc.ypos,pc.xpos,'.');
+					wprintw(log_win,"\nYou grab the dollar sign!");
+				} else {
+					wprintw(log_win,"\nNothing here...");
 				}
 				break;
-			default:
-				debug(log_win,99,"Something broke...");
-			}
-			break;
-		case 's':
-			switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
-			case 0:
-				if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
+			//log testing
+			case 'l':
+				wprintw(log_win,"\nHello there");
 				break;
-			case 1:
-				wprintw(log_win,"\nYou bonk into the wall!");
+			case 'k':
+				wprintw(log_win,"\nGeneral Kenobi");
 				break;
-			case 2:
-				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos+1, pc.xpos) ) ) {
+			//char movement down here
+			case 'w':
+				switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
 				case 0:
+					if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
 					break;
 				case 1:
-					//game over!
+					wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
-					enemies.delete_unit(pc.ypos+1, pc.xpos);
-					mvwaddch(map, pc.ypos+1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos+1, pc.xpos) );
+					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
+					case 0:
+						break;
+					case 1:
+						//game over!
+						break;
+					case 2:
+						enemies.delete_unit(pc.ypos-1, pc.xpos);
+						mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
+						break;
+					default:
+						debug(log_win,99,"Something broke!");
+					}
+					break;
+				case 3:
+					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					dialog_level = 1;
 					break;
 				default:
-					debug(log_win,99,"Something broke!");
+					debug(log_win,99,"Something broke...");
 				}
 				break;
-			default:
-				debug(log_win,99,"Something broke...");
-			}
-			break;
-		case 'a':
-			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
-			case 0:
-				if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
-				break;
-			case 1:
-				wprintw(log_win,"\nYou bonk into the wall!");
-				break;
-			case 2:
-				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos-1) ) ) {
+			case 's':
+				switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
 				case 0:
+					if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
 					break;
 				case 1:
-					//game over!
+					wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
-					enemies.delete_unit(pc.ypos, pc.xpos-1);
-					mvwaddch(map, pc.ypos, pc.xpos-1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos-1) );
+					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos+1, pc.xpos) ) ) {
+					case 0:
+						break;
+					case 1:
+						//game over!
+						break;
+					case 2:
+						enemies.delete_unit(pc.ypos+1, pc.xpos);
+						mvwaddch(map, pc.ypos+1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos+1, pc.xpos) );
+						break;
+					default:
+						debug(log_win,99,"Something broke!");
+					}
+					break;
+				case 3:
+					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					dialog_level = 1;
 					break;
 				default:
-					debug(log_win,99,"Something broke!");
+					debug(log_win,99,"Something broke...");
 				}
 				break;
-			default:
-				debug(log_win,99,"Something broke...");
-			}
-			break;
-		case 'd':
-			switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
-			case 0:
-				if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
-				break;
-			case 1:
-				wprintw(log_win,"\nYou bonk into the wall!");
-				break;
-			case 2:
-				switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos+1) ) ) {
+			case 'a':
+				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
 				case 0:
+					if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
 					break;
 				case 1:
-					//game over!
+					wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
-					enemies.delete_unit(pc.ypos, pc.xpos+1);
-					mvwaddch(map, pc.ypos, pc.xpos+1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos+1) );
+					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos-1) ) ) {
+					case 0:
+						break;
+					case 1:
+						//game over!
+						break;
+					case 2:
+						enemies.delete_unit(pc.ypos, pc.xpos-1);
+						mvwaddch(map, pc.ypos, pc.xpos-1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos-1) );
+						break;
+					default:
+						debug(log_win,99,"Something broke!");
+					}
+					break;
+				case 3:
+					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					dialog_level = 1;
 					break;
 				default:
-					debug(log_win,99,"Something broke!");
+					debug(log_win,99,"Something broke...");
 				}
 				break;
-			default:
-				debug(log_win,99,"Something broke...");
+			case 'd':
+				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
+				case 0:
+					if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
+					break;
+				case 1:
+					wprintw(log_win,"\nYou bonk into the wall!");
+					break;
+				case 2:
+					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos+1) ) ) {
+					case 0:
+						break;
+					case 1:
+						//game over!
+						break;
+					case 2:
+						enemies.delete_unit(pc.ypos, pc.xpos+1);
+						mvwaddch(map, pc.ypos, pc.xpos+1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos+1) );
+						break;
+					default:
+						debug(log_win,99,"Something broke!");
+					}
+					break;
+				case 3:
+					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					dialog_level = 1;
+					break;
+				default:
+					debug(log_win,99,"Something broke...");
+				}
+				break;
 			}
-			break;
 		}
 
 		//enemy action

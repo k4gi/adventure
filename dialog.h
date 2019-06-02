@@ -4,6 +4,8 @@
 #include <string>
 #include <ncurses.h>
 
+#define HIGHLIGHTING A_REVERSE
+
 /*
 this will be a 'class' that handles a dialog system with pop-up windows, choices, idk a bunch of stuff
 */
@@ -25,6 +27,7 @@ class dialog {
 
 	dialog_selector *add_selector(int choices[], int choices_size);
 public:
+	dialog();
 	dialog(WINDOW *win, int choices[], int choices_size);
 	void add_win(WINDOW *win, int choices[], int choices_size);
 	void pop_win();
