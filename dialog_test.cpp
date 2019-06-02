@@ -5,6 +5,8 @@
 
 int main() {
 	initscr();
+	noecho();
+	curs_set(0);
 
 	int y,x;
 	getmaxyx(stdscr,y,x);
@@ -35,8 +37,10 @@ int main() {
 		case 's':
 			talk.move_down();
 			break;
+		case '\n':
+			mvwprintw(talk.get_win(), 0, 0, "Arbitrary code %d", talk.select());
+			break;
 		}
-		mvwprintw(talk.get_win(),1,0,"select:%d",talk.select());
 	} while(in != 'q');
 
 	endwin();

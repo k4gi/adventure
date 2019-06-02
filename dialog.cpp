@@ -65,18 +65,18 @@ void dialog::refresh_win() {
 	for(int i=0; i<y; i++) {
 		//chtype *thisline = (chtype *) malloc( sizeof(chtype)*x );
 		//mvwinchstr(top->data, i, 0, thisline);
-		char *thisline = (char *) malloc( sizeof(char)*x );
+		char *thisline = (char *) malloc( sizeof(char)*(x+1) );
 		mvwinstr(top->data, i, 0, thisline);
 		if(i != top->selector->line) {
-			attrset(A_NORMAL);
+			wattroff(top->data, A_REVERSE);
 		} else {
-			attrset(A_REVERSE);
+			wattron(top->data, A_REVERSE);
 		}
 		//mvwaddchstr(top->data, i, 0, thisline);
 		mvwaddstr(top->data, i, 0, thisline);
 		free(thisline);
 	}
-	attrset(A_NORMAL);
+	wattrset(top->data, A_NORMAL);
 
 	wrefresh(top->data);
 }
