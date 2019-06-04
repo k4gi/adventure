@@ -36,6 +36,7 @@ public:
 	void move_down();
 	void refresh_win();
 	WINDOW *get_win();
+	void decorate(char l, char r, char t, char b, char tl, char tr, char bl, char br);
 };
 
 #endif

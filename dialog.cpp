@@ -101,3 +101,8 @@ WINDOW *dialog::get_win() {
 		return NULL;
 	}
 }
+
+void dialog::decorate(char l, char r, char t, char b, char tl, char tr, char bl, char br) {
+	wborder(top->data, l, r, t, b, tl, tr, bl, br);
+}
+

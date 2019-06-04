@@ -82,6 +82,17 @@ int main() {
 	mvwprintw(talk_to_rose, 3, 1, "OK");
 	mvwprintw(talk_to_rose, 4, 1, "(empty)");
 	//box(talk_to_rose,0,0);
+	/* The parameters taken are 
+	 * 1. win: the window on which to operate
+	 * 2. ls: character to be used for the left side of the window 
+	 * 3. rs: character to be used for the right side of the window 
+	 * 4. ts: character to be used for the top side of the window 
+	 * 5. bs: character to be used for the bottom side of the window 
+	 * 6. tl: character to be used for the top left corner of the window 
+	 * 7. tr: character to be used for the top right corner of the window 
+	 * 8. bl: character to be used for the bottom left corner of the window 
+	 * 9. br: character to be used for the bottom right corner of the window
+	 */
 	int talk_to_rose_choices[2] = {3,4};
 	int talk_to_rose_choices_size = 2;
 	mvwaddch(map, 9, 25, '@'); //rose
@@ -97,7 +108,6 @@ int main() {
 
 			//player input & handling
 			in = wgetch(di.get_win());
-			mvwprintw(di.get_win(),0,0,"%d",di.select());
 			switch(in) {
 			case 'w':
 				di.move_up();
@@ -108,9 +118,8 @@ int main() {
 			case ' ':
 			case '\n':
 				switch(dialog_level) {
-				case '1': //rose
-					//if(talk_to_rose_choices[0] == di.select()) {
-					if(true) {
+				case 1: //rose
+					if(talk_to_rose_choices[0] == di.select()) {
 						di.pop_win();
 						dialog_level = 0;
 					}
@@ -182,6 +191,7 @@ int main() {
 					break;
 				case 3:
 					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
 					dialog_level = 1;
 					break;
 				default:
@@ -213,6 +223,7 @@ int main() {
 					break;
 				case 3:
 					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
 					dialog_level = 1;
 					break;
 				default:
@@ -244,6 +255,7 @@ int main() {
 					break;
 				case 3:
 					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
 					dialog_level = 1;
 					break;
 				default:
@@ -275,6 +287,7 @@ int main() {
 					break;
 				case 3:
 					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
 					dialog_level = 1;
 					break;
 				default:
