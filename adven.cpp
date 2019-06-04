@@ -11,7 +11,7 @@
 #define SPAWN_ATTEMPTS 5
 
 #define DEBUGGING true
-#define DEBUGGING_LEVEL 1
+#define DEBUGGING_LEVEL 2
 
 void debug(WINDOW *win,int level,std::string input) {
 	if(DEBUGGING && level >= DEBUGGING_LEVEL) {
@@ -129,6 +129,9 @@ int main() {
 			}
 		} else { //free movement
 			//refresh the screen
+			
+			debug(log_win,1,std::to_string( enemies.count() ));
+			
 			for(int i=1; i<(x-log_width)-2; i++) {
 				mvwaddch(hp_win,1,i,' ');
 			}
@@ -144,6 +147,7 @@ int main() {
 			prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
 			wrefresh(log_win);
 			wrefresh(hp_win);
+
 			
 			//player input & handling
 			in = getch();
@@ -337,9 +341,11 @@ int main() {
 						debug(log_win,0,"spawn another enemy");
 						//position is monster room of testing_map.dat
 						for(int i=0; i<SPAWN_ATTEMPTS; i++) {
-							if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
+							if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) {
+								curr = curr->next;
+								break;
+							}
 						}
-						curr = curr->next;
 					}	
 				}
 				curr = curr->next;

@@ -130,3 +130,13 @@ void unit_list::draw(WINDOW *map) {
 		mvwaddch(map, curr->data.ypos, curr->data.xpos, curr->data.sym);
 	}
 }
+
+int unit_list::count() {
+	int output = 0;
+	unit_node *curr = head;
+	while(curr != NULL) {
+		output ++;
+		curr = curr->next;
+	}
+	return output;
+}
