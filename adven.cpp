@@ -38,7 +38,7 @@ int main() {
 	pc.sym = '@';
 	pc.ypos = 2;
 	pc.xpos = 2;
-	pc.hp = 99;
+	pc.hp = 100;
 	pc.dmg = 1;
 
 	unit_list enemies = unit_list();
@@ -77,24 +77,56 @@ int main() {
 	int dialog_level = 0; //1 or greater when a dialog is open
 	int dialog_height = 6;
 	int dialog_width = 40;
+
 	WINDOW *talk_to_rose = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
-	mvwprintw(talk_to_rose, 1, 1, "Hello there. My name is Rose. I don't have much to say right now.");
-	mvwprintw(talk_to_rose, 3, 1, "OK");
-	mvwprintw(talk_to_rose, 4, 1, "(empty)");
-	//box(talk_to_rose,0,0);
-	/* The parameters taken are 
-	 * 1. win: the window on which to operate
-	 * 2. ls: character to be used for the left side of the window 
-	 * 3. rs: character to be used for the right side of the window 
-	 * 4. ts: character to be used for the top side of the window 
-	 * 5. bs: character to be used for the bottom side of the window 
-	 * 6. tl: character to be used for the top left corner of the window 
-	 * 7. tr: character to be used for the top right corner of the window 
-	 * 8. bl: character to be used for the bottom left corner of the window 
-	 * 9. br: character to be used for the bottom right corner of the window
-	 */
+	for(int i=0; i<dialog_width; i++) {
+		mvwaddch(talk_to_rose, 0, i, '=');
+		mvwaddch(talk_to_rose, 5, i, '=');
+	}
+	mvwprintw(talk_to_rose, 1, 1, "Hello there. My name is Rose. I don't");
+	mvwprintw(talk_to_rose, 2, 1, "have much to say right now.");
+	mvwprintw(talk_to_rose, 3, 1, "*Leave*");
+	mvwprintw(talk_to_rose, 4, 1, "Why are you here?");
 	int talk_to_rose_choices[2] = {3,4};
 	int talk_to_rose_choices_size = 2;
+
+	WINDOW *ask_rose_a = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
+	for(int i=0; i<dialog_width; i++) {
+		mvwaddch(ask_rose_a, 0, i, '=');
+		mvwaddch(ask_rose_a, 5, i, '=');
+	}
+	mvwprintw(ask_rose_a, 1, 1, "Well I wanted to adventure.");
+	mvwprintw(ask_rose_a, 2, 1, "Too long sitting at home waiting");
+	mvwprintw(ask_rose_a, 3, 1, "for adventure to come to me...");
+	mvwprintw(ask_rose_a, 4, 1, "<continue>");
+	int ask_rose_a_choices[1] = {4};
+	int ask_rose_a_choices_size = 1;
+
+	WINDOW *ask_rose_b = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
+	for(int i=0; i<dialog_width; i++) {
+		mvwaddch(ask_rose_b, 0, i, '=');
+		mvwaddch(ask_rose_b, 5, i, '=');
+	}
+	mvwprintw(ask_rose_b, 1, 1, "But it's awfully scary down there.");
+	mvwprintw(ask_rose_b, 2, 1, "Could you bring back the treasure");
+	mvwprintw(ask_rose_b, 3, 1, "for me? Please?");
+	mvwprintw(ask_rose_b, 4, 1, "<exit>");
+	int ask_rose_b_choices[1] = {4};
+	int ask_rose_b_choices_size = 1;
+	
+	WINDOW *rose_success = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
+	for(int i=0; i<dialog_width; i++) {
+		mvwaddch(rose_success, 0, i, '=');
+		mvwaddch(rose_success, 5, i, '=');
+	}
+	mvwprintw(rose_success, 1, 1, "Oh wow, you did it!");
+	mvwprintw(rose_success, 2, 1, "You're my hero <3");
+	mvwprintw(rose_success, 4, 1, "<exit>");
+	int rose_success_choices[1] = {4};
+	int rose_success_choices_size = 1;
+
+	int obtained_treasure = 0;
+
 	mvwaddch(map, 9, 25, '@'); //rose
 	
 	//input loop
@@ -120,6 +152,29 @@ int main() {
 				switch(dialog_level) {
 				case 1: //rose
 					if(talk_to_rose_choices[0] == di.select()) {
+						di.pop_win();
+						dialog_level = 0;
+					} else if(talk_to_rose_choices[1] == di.select()) {
+						di.add_win(ask_rose_a, ask_rose_a_choices, ask_rose_a_choices_size);
+						dialog_level = 2;
+					}
+					break;
+				case 2: //rose
+					if(ask_rose_a_choices[0] == di.select()) {
+						di.add_win(ask_rose_b, ask_rose_b_choices, ask_rose_b_choices_size);
+						dialog_level = 3;
+					}
+					break;
+				case 3: //rose
+					if(ask_rose_b_choices[0] == di.select()) {
+						di.pop_win(); //2
+						di.pop_win(); //1
+						di.pop_win(); //0
+						dialog_level = 0;
+					}
+					break;
+				case 4: //rose
+					if(rose_success_choices[0] == di.select()) {
 						di.pop_win();
 						dialog_level = 0;
 					}
@@ -156,6 +211,7 @@ int main() {
 			case 'g':
 				if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
 					//inventory management..?
+					obtained_treasure = 1;
 					mvwaddch(dan.getgrid(),pc.ypos,pc.xpos,'.');
 					wprintw(log_win,"\nYou grab the dollar sign!");
 				} else {
@@ -194,9 +250,13 @@ int main() {
 					}
 					break;
 				case 3:
-					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
-					dialog_level = 1;
+					if(obtained_treasure == 1) {
+						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
+						dialog_level = 4;
+					} else {
+						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+						dialog_level = 1;
+					}
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
@@ -226,9 +286,13 @@ int main() {
 					}
 					break;
 				case 3:
-					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
-					dialog_level = 1;
+					if(obtained_treasure == 1) {
+						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
+						dialog_level = 4;
+					} else {
+						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+						dialog_level = 1;
+					}
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
@@ -258,9 +322,13 @@ int main() {
 					}
 					break;
 				case 3:
-					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
-					dialog_level = 1;
+					if(obtained_treasure == 1) {
+						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
+						dialog_level = 4;
+					} else {
+						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+						dialog_level = 1;
+					}
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
@@ -290,9 +358,13 @@ int main() {
 					}
 					break;
 				case 3:
-					di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-					di.decorate(ACS_DARROW, ACS_UARROW, ACS_LARROW, ACS_RARROW, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND, ACS_DIAMOND);
-					dialog_level = 1;
+					if(obtained_treasure == 1) {
+						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
+						dialog_level = 4;
+					} else {
+						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+						dialog_level = 1;
+					}
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
