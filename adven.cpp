@@ -1,22 +1,47 @@
-#include <ncurses.h>
-#include <cstdlib>
-#include <string>
-
-#include "map_loader.h"
-#include "unit.h"
-#include "roman.h"
-#include "dialog.h"
-
-#define FILENAME "testing_map.dat"
-#define SPAWN_ATTEMPTS 5
-
-#define DEBUGGING true
-#define DEBUGGING_LEVEL 2
+#include "adven.h"
 
 void debug(WINDOW *win,int level,std::string input) {
 	if(DEBUGGING && level >= DEBUGGING_LEVEL) {
 		wprintw(win,"\ndebug:%s",input.c_str());
 	}
+}
+
+void char_movement(game_state *game, int ydes, int xdes) {	
+	switch( move_player(game->map, game.dan.getgrid(), &game.pc, ydes, xdes) ) {
+	case 0:
+		//gotta move camera ... if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
+		break;
+	case 1:
+		wprintw(log_win,"\nYou bonk into the wall!");
+		break;
+	case 2:
+		switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
+		case 0:
+			break;
+		case 1:
+			//game over!
+			break;
+		case 2:
+			enemies.delete_unit(pc.ypos-1, pc.xpos);
+			mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
+			break;
+		default:
+			debug(log_win,99,"Something broke!");
+		}
+		break;
+	case 3:
+		if(obtained_treasure == 1) {
+			di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
+			dialog_level = 4;
+		} else {
+			di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
+			dialog_level = 1;
+		}
+		break;
+	default:
+		debug(log_win,99,"Something broke...");
+	}
+	break;
 }
 
 int main() {
@@ -30,43 +55,42 @@ int main() {
 	int y,x;
 	getmaxyx(stdscr,y,x);
 
+	game_state gs;
+	gs.ypos = 0;
+	gs.xpos = 0;
 
-	int ypos = 0, xpos = 0; //top left corner of the visible map
+	gs.pc.name = "player";
+	gs.pc.sym = '@';
+	gs.pc.ypos = 2;
+	gs.pc.xpos = 2;
+	gs.pc.hp = 100;
+	gs.pc.dmg = 1;
 
-	unit pc;
-	pc.name = "player";
-	pc.sym = '@';
-	pc.ypos = 2;
-	pc.xpos = 2;
-	pc.hp = 100;
-	pc.dmg = 1;
+	gs.enemies = unit_list();
 
-	unit_list enemies = unit_list();
-
-	map_loader dan;
 
 	int log_width = 40, hp_height = 3; //size of the hud
 
 	int map_start_y = hp_height, map_start_x = 0, map_size_y = y-hp_height, map_size_x = x-log_width; //start and end points for drawing the map
 
-	WINDOW *hp_win = newwin(hp_height,x-log_width,0,0);
-	WINDOW *log_win = newwin(y,log_width,0,x-log_width);
+	gs->hp_win = newwin(hp_height,x-log_width,0,0);
+	gs->log_win = newwin(y,log_width,0,x-log_width);
 
-	box(hp_win,0,0);
-	box(log_win,0,0);
+	box(gs->hp_win,0,0);
+	box(gs->log_win,0,0);
 
-	scrollok(log_win,true);
+	scrollok(gs->log_win,true);
 	/*
 	scrolling doesn't play nice with a border it scrolls the border too
 	idk what people do about that whether it's making a new window inside the border
 	or just like implementing scrolling themselves which seems like too much trouble
 	*/
 
-	WINDOW *map = dan.load_map(FILENAME);
+	gs->map = gs.dan.load_map(FILENAME);
 	
-	mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
+	mvwaddch(gs->map,gs.pc.ypos,gs.pc.xpos,gs.pc.sym);
 
-	wprintw(log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
+	wprintw(gs->log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
 
 	refresh();
 
@@ -125,9 +149,9 @@ int main() {
 	int rose_success_choices[1] = {4};
 	int rose_success_choices_size = 1;
 
-	int obtained_treasure = 0;
+	gs.obtained_treasure = 0;
 
-	mvwaddch(map, 9, 25, '@'); //rose
+	mvwaddch(gs->map, 9, 25, '@'); //rose
 	
 	//input loop
 	char in;
@@ -185,23 +209,23 @@ int main() {
 		} else { //free movement
 			//refresh the screen
 			
-			debug(log_win,1,std::to_string( enemies.count() ));
+			debug(gs->log_win,1,std::to_string( gs.enemies.count() ));
 			
 			for(int i=1; i<(x-log_width)-2; i++) {
-				mvwaddch(hp_win,1,i,' ');
+				mvwaddch(gs->hp_win,1,i,' ');
 			}
 
-			mvwprintw(hp_win,1,1,roman(pc.hp).c_str());
+			mvwprintw(gs->hp_win,1,1,roman(gs.pc.hp).c_str());
 
-			if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
-				wprintw(log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
+			if(mvwinch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos) == '$') {
+				wprintw(gs->log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
 			}
 			
-			enemies.draw(map);
+			gs.enemies.draw(gs->map);
 
-			prefresh(map,ypos,xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
-			wrefresh(log_win);
-			wrefresh(hp_win);
+			prefresh(gs->map,gs.ypos,gs.xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
+			wrefresh(gs->log_win);
+			wrefresh(gs->hp_win);
 
 			
 			//player input & handling
@@ -209,21 +233,21 @@ int main() {
 			switch(in) {
 			//pickup
 			case 'g':
-				if(mvwinch(dan.getgrid(),pc.ypos,pc.xpos) == '$') {
+				if(mvwinch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos) == '$') {
 					//inventory management..?
-					obtained_treasure = 1;
-					mvwaddch(dan.getgrid(),pc.ypos,pc.xpos,'.');
-					wprintw(log_win,"\nYou grab the dollar sign!");
+					gs.obtained_treasure = 1;
+					mvwaddch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos,'.');
+					wprintw(gs->log_win,"\nYou grab the dollar sign!");
 				} else {
-					wprintw(log_win,"\nNothing here...");
+					wprintw(gs->log_win,"\nNothing here...");
 				}
 				break;
 			//log testing
 			case 'l':
-				wprintw(log_win,"\nHello there");
+				wprintw(gs->log_win,"\nHello there");
 				break;
 			case 'k':
-				wprintw(log_win,"\nGeneral Kenobi");
+				wprintw(gs->log_win,"\nGeneral Kenobi");
 				break;
 			//char movement down here
 			case 'w':
