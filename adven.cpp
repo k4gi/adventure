@@ -15,22 +15,22 @@ void char_movement(game_state *game, int ydes, int xdes) {
 		wprintw(log_win,"\nYou bonk into the wall!");
 		break;
 	case 2:
-		switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
+		switch( attack(game->log_win, &game.pc, game->enemies.find_unit(ydes, xdes) ) ) {
 		case 0:
 			break;
 		case 1:
 			//game over!
 			break;
 		case 2:
-			enemies.delete_unit(pc.ypos-1, pc.xpos);
-			mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
+			game->enemies.delete_unit(ydes, xdes);
+			mvwaddch(game->map, ydes, xdes, mvwinch(game.dan.getgrid(), ydes, xdes) );
 			break;
 		default:
 			debug(log_win,99,"Something broke!");
 		}
 		break;
 	case 3:
-		if(obtained_treasure == 1) {
+		if(obtained_treasure == 1) { //no no no dialog stuff here aaaaa
 			di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
 			dialog_level = 4;
 		} else {
@@ -251,148 +251,16 @@ int main() {
 				break;
 			//char movement down here
 			case 'w':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
-				case 0:
-					if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
-					break;
-				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
-					break;
-				case 2:
-					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
-					case 0:
-						break;
-					case 1:
-						//game over!
-						break;
-					case 2:
-						enemies.delete_unit(pc.ypos-1, pc.xpos);
-						mvwaddch(map, pc.ypos-1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos-1, pc.xpos) );
-						break;
-					default:
-						debug(log_win,99,"Something broke!");
-					}
-					break;
-				case 3:
-					if(obtained_treasure == 1) {
-						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
-						dialog_level = 4;
-					} else {
-						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-						dialog_level = 1;
-					}
-					break;
-				default:
-					debug(log_win,99,"Something broke...");
-				}
+				char_movement(&gs, gs.pc.ypos-1, gs.pc.xpos);
 				break;
 			case 's':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
-				case 0:
-					if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
-					break;
-				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
-					break;
-				case 2:
-					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos+1, pc.xpos) ) ) {
-					case 0:
-						break;
-					case 1:
-						//game over!
-						break;
-					case 2:
-						enemies.delete_unit(pc.ypos+1, pc.xpos);
-						mvwaddch(map, pc.ypos+1, pc.xpos, mvwinch(dan.getgrid(), pc.ypos+1, pc.xpos) );
-						break;
-					default:
-						debug(log_win,99,"Something broke!");
-					}
-					break;
-				case 3:
-					if(obtained_treasure == 1) {
-						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
-						dialog_level = 4;
-					} else {
-						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-						dialog_level = 1;
-					}
-					break;
-				default:
-					debug(log_win,99,"Something broke...");
-				}
+				char_movement(&gs, gs.pc.ypos+1, gs.pc.xpos);
 				break;
 			case 'a':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
-				case 0:
-					if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
-					break;
-				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
-					break;
-				case 2:
-					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos-1) ) ) {
-					case 0:
-						break;
-					case 1:
-						//game over!
-						break;
-					case 2:
-						enemies.delete_unit(pc.ypos, pc.xpos-1);
-						mvwaddch(map, pc.ypos, pc.xpos-1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos-1) );
-						break;
-					default:
-						debug(log_win,99,"Something broke!");
-					}
-					break;
-				case 3:
-					if(obtained_treasure == 1) {
-						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
-						dialog_level = 4;
-					} else {
-						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-						dialog_level = 1;
-					}
-					break;
-				default:
-					debug(log_win,99,"Something broke...");
-				}
+				char_movement(&gs, gs.pc.ypos, gs.pc.xpos-1);
 				break;
 			case 'd':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
-				case 0:
-					if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
-					break;
-				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
-					break;
-				case 2:
-					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos+1) ) ) {
-					case 0:
-						break;
-					case 1:
-						//game over!
-						break;
-					case 2:
-						enemies.delete_unit(pc.ypos, pc.xpos+1);
-						mvwaddch(map, pc.ypos, pc.xpos+1, mvwinch(dan.getgrid(), pc.ypos, pc.xpos+1) );
-						break;
-					default:
-						debug(log_win,99,"Something broke!");
-					}
-					break;
-				case 3:
-					if(obtained_treasure == 1) {
-						di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
-						dialog_level = 4;
-					} else {
-						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
-						dialog_level = 1;
-					}
-					break;
-				default:
-					debug(log_win,99,"Something broke...");
-				}
+				char_movement(&gs, gs.pc.ypos, gs.pc.xpos+1);
 				break;
 			}
 		}
