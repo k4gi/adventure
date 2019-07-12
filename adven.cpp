@@ -7,15 +7,15 @@ void debug(WINDOW *win,int level,std::string input) {
 }
 
 void char_movement(game_state *game, int ydes, int xdes) {	
-	switch( move_player(game->map, game.dan.getgrid(), &game.pc, ydes, xdes) ) {
+	switch( move_player(game->map, game->dan.getgrid(), &game->pc, ydes, xdes) ) {
 	case 0:
 		//gotta move camera ... if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
 		break;
 	case 1:
-		wprintw(log_win,"\nYou bonk into the wall!");
+		wprintw(game->log_win,"\nYou bonk into the wall!");
 		break;
 	case 2:
-		switch( attack(game->log_win, &game.pc, game->enemies.find_unit(ydes, xdes) ) ) {
+		switch( attack(game->log_win, &game->pc, game->enemies.find_unit(ydes, xdes) ) ) {
 		case 0:
 			break;
 		case 1:
@@ -23,13 +23,14 @@ void char_movement(game_state *game, int ydes, int xdes) {
 			break;
 		case 2:
 			game->enemies.delete_unit(ydes, xdes);
-			mvwaddch(game->map, ydes, xdes, mvwinch(game.dan.getgrid(), ydes, xdes) );
+			mvwaddch(game->map, ydes, xdes, mvwinch(game->dan.getgrid(), ydes, xdes) );
 			break;
 		default:
-			debug(log_win,99,"Something broke!");
+			debug(game->log_win,99,"Something broke!");
 		}
 		break;
 	case 3:
+		/*
 		if(obtained_treasure == 1) { //no no no dialog stuff here aaaaa
 			di.add_win(rose_success, rose_success_choices, rose_success_choices_size);
 			dialog_level = 4;
@@ -38,10 +39,10 @@ void char_movement(game_state *game, int ydes, int xdes) {
 			dialog_level = 1;
 		}
 		break;
+		*/
 	default:
-		debug(log_win,99,"Something broke...");
+		debug(game->log_win,99,"Something broke...");
 	}
-	break;
 }
 
 int main() {
@@ -73,24 +74,24 @@ int main() {
 
 	int map_start_y = hp_height, map_start_x = 0, map_size_y = y-hp_height, map_size_x = x-log_width; //start and end points for drawing the map
 
-	gs->hp_win = newwin(hp_height,x-log_width,0,0);
-	gs->log_win = newwin(y,log_width,0,x-log_width);
+	gs.hp_win = newwin(hp_height,x-log_width,0,0);
+	gs.log_win = newwin(y,log_width,0,x-log_width);
 
-	box(gs->hp_win,0,0);
-	box(gs->log_win,0,0);
+	box(gs.hp_win,0,0);
+	box(gs.log_win,0,0);
 
-	scrollok(gs->log_win,true);
+	scrollok(gs.log_win,true);
 	/*
 	scrolling doesn't play nice with a border it scrolls the border too
 	idk what people do about that whether it's making a new window inside the border
 	or just like implementing scrolling themselves which seems like too much trouble
 	*/
 
-	gs->map = gs.dan.load_map(FILENAME);
+	gs.map = gs.dan.load_map(FILENAME);
 	
-	mvwaddch(gs->map,gs.pc.ypos,gs.pc.xpos,gs.pc.sym);
+	mvwaddch(gs.map,gs.pc.ypos,gs.pc.xpos,gs.pc.sym);
 
-	wprintw(gs->log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
+	wprintw(gs.log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
 
 	refresh();
 
@@ -151,7 +152,7 @@ int main() {
 
 	gs.obtained_treasure = 0;
 
-	mvwaddch(gs->map, 9, 25, '@'); //rose
+	mvwaddch(gs.map, 9, 25, '@'); //rose
 	
 	//input loop
 	char in;
@@ -209,23 +210,23 @@ int main() {
 		} else { //free movement
 			//refresh the screen
 			
-			debug(gs->log_win,1,std::to_string( gs.enemies.count() ));
+			debug(gs.log_win,1,std::to_string( gs.enemies.count() ));
 			
 			for(int i=1; i<(x-log_width)-2; i++) {
-				mvwaddch(gs->hp_win,1,i,' ');
+				mvwaddch(gs.hp_win,1,i,' ');
 			}
 
-			mvwprintw(gs->hp_win,1,1,roman(gs.pc.hp).c_str());
+			mvwprintw(gs.hp_win,1,1,roman(gs.pc.hp).c_str());
 
 			if(mvwinch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos) == '$') {
-				wprintw(gs->log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
+				wprintw(gs.log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
 			}
 			
-			gs.enemies.draw(gs->map);
+			gs.enemies.draw(gs.map);
 
-			prefresh(gs->map,gs.ypos,gs.xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
-			wrefresh(gs->log_win);
-			wrefresh(gs->hp_win);
+			prefresh(gs.map,gs.ypos,gs.xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
+			wrefresh(gs.log_win);
+			wrefresh(gs.hp_win);
 
 			
 			//player input & handling
@@ -237,17 +238,17 @@ int main() {
 					//inventory management..?
 					gs.obtained_treasure = 1;
 					mvwaddch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos,'.');
-					wprintw(gs->log_win,"\nYou grab the dollar sign!");
+					wprintw(gs.log_win,"\nYou grab the dollar sign!");
 				} else {
-					wprintw(gs->log_win,"\nNothing here...");
+					wprintw(gs.log_win,"\nNothing here...");
 				}
 				break;
 			//log testing
 			case 'l':
-				wprintw(gs->log_win,"\nHello there");
+				wprintw(gs.log_win,"\nHello there");
 				break;
 			case 'k':
-				wprintw(gs->log_win,"\nGeneral Kenobi");
+				wprintw(gs.log_win,"\nGeneral Kenobi");
 				break;
 			//char movement down here
 			case 'w':
@@ -266,46 +267,46 @@ int main() {
 		}
 
 		//enemy action
-		debug(log_win,0,"enemy action");
-		unit_node *curr = enemies.gethead();
+		debug(gs.log_win,0,"enemy action");
+		unit_node *curr = gs.enemies.gethead();
 		if( curr == NULL ) {
 			//no enemies, high chance of spawn
-			debug(log_win,0,"no enemies");
+			debug(gs.log_win,0,"no enemies");
 			if( rand()%4 == 0 ) {
-				debug(log_win,0,"spawn first enemy");
+				debug(gs.log_win,0,"spawn first enemy");
 				//position is monster room of testing_map.dat
 				for(int i=0; i<SPAWN_ATTEMPTS; i++) {
-					if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
+					if( gs.enemies.add_unit(gs.map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
 				}
 			}	
 		} else {
-			debug(log_win,0,"some enemies");
+			debug(gs.log_win,0,"some enemies");
 			while( curr != NULL ) {
 				//move enemy
-				debug(log_win,0,"moving an enemy");
+				debug(gs.log_win,0,"moving an enemy");
 				switch(rand()%4) {
 				case 0:
-					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos-1, curr->data.xpos);
+					move_enemy(gs.map, gs.dan.getgrid(), &curr->data, curr->data.ypos-1, curr->data.xpos);
 					break;
 				case 2:
-					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos+1, curr->data.xpos);
+					move_enemy(gs.map, gs.dan.getgrid(), &curr->data, curr->data.ypos+1, curr->data.xpos);
 					break;
 				case 3:
-					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos-1);
+					move_enemy(gs.map, gs.dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos-1);
 					break;
 				case 1:
-					move_enemy(map, dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos+1);
+					move_enemy(gs.map, gs.dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos+1);
 					break;
 				}
 				
 				if( curr->next == NULL ) {
-					debug(log_win,0,"spawn a new enemy?");
+					debug(gs.log_win,0,"spawn a new enemy?");
 					//chance to spawn new enemy
 					if( rand()%20 == 0 ) {
-						debug(log_win,0,"spawn another enemy");
+						debug(gs.log_win,0,"spawn another enemy");
 						//position is monster room of testing_map.dat
 						for(int i=0; i<SPAWN_ATTEMPTS; i++) {
-							if( enemies.add_unit(map, 7, 7+rand()%5, 37+rand()%9) == 0) {
+							if( gs.enemies.add_unit(gs.map, 7, 7+rand()%5, 37+rand()%9) == 0) {
 								curr = curr->next;
 								break;
 							}
