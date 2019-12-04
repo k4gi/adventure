@@ -6,7 +6,7 @@ void debug(WINDOW *win,int level,std::string input) {
 	}
 }
 
-void char_movement(game_state *game, int ydes, int xdes) {	
+void char_movement(game_state *game, int ydes, int xdes) {
 	switch( move_player(game->map, game->dan.getgrid(), &game->pc, ydes, xdes) ) {
 	case 0:
 		//gotta move camera ... if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
@@ -52,7 +52,7 @@ int main() {
 	curs_set(0);
 
 	srand(0); //seed random generator
-	
+
 	int y,x;
 	getmaxyx(stdscr,y,x);
 
@@ -88,7 +88,7 @@ int main() {
 	*/
 
 	gs.map = gs.dan.load_map(FILENAME);
-	
+
 	mvwaddch(gs.map,gs.pc.ypos,gs.pc.xpos,gs.pc.sym);
 
 	wprintw(gs.log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
@@ -100,60 +100,12 @@ int main() {
 	dialog di = dialog();
 
 	int dialog_level = 0; //1 or greater when a dialog is open
-	int dialog_height = 6;
-	int dialog_width = 40;
-
-	WINDOW *talk_to_rose = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
-	for(int i=0; i<dialog_width; i++) {
-		mvwaddch(talk_to_rose, 0, i, '=');
-		mvwaddch(talk_to_rose, 5, i, '=');
-	}
-	mvwprintw(talk_to_rose, 1, 1, "Hello there. My name is Rose. I don't");
-	mvwprintw(talk_to_rose, 2, 1, "have much to say right now.");
-	mvwprintw(talk_to_rose, 3, 1, "*Leave*");
-	mvwprintw(talk_to_rose, 4, 1, "Why are you here?");
-	int talk_to_rose_choices[2] = {3,4};
-	int talk_to_rose_choices_size = 2;
-
-	WINDOW *ask_rose_a = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
-	for(int i=0; i<dialog_width; i++) {
-		mvwaddch(ask_rose_a, 0, i, '=');
-		mvwaddch(ask_rose_a, 5, i, '=');
-	}
-	mvwprintw(ask_rose_a, 1, 1, "Well I wanted to adventure.");
-	mvwprintw(ask_rose_a, 2, 1, "Too long sitting at home waiting");
-	mvwprintw(ask_rose_a, 3, 1, "for adventure to come to me...");
-	mvwprintw(ask_rose_a, 4, 1, "<continue>");
-	int ask_rose_a_choices[1] = {4};
-	int ask_rose_a_choices_size = 1;
-
-	WINDOW *ask_rose_b = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
-	for(int i=0; i<dialog_width; i++) {
-		mvwaddch(ask_rose_b, 0, i, '=');
-		mvwaddch(ask_rose_b, 5, i, '=');
-	}
-	mvwprintw(ask_rose_b, 1, 1, "But it's awfully scary down there.");
-	mvwprintw(ask_rose_b, 2, 1, "Could you bring back the treasure");
-	mvwprintw(ask_rose_b, 3, 1, "for me? Please?");
-	mvwprintw(ask_rose_b, 4, 1, "<exit>");
-	int ask_rose_b_choices[1] = {4};
-	int ask_rose_b_choices_size = 1;
 	
-	WINDOW *rose_success = newwin(dialog_height, dialog_width, y/2 - dialog_height/2, x/2 - dialog_width/2);
-	for(int i=0; i<dialog_width; i++) {
-		mvwaddch(rose_success, 0, i, '=');
-		mvwaddch(rose_success, 5, i, '=');
-	}
-	mvwprintw(rose_success, 1, 1, "Oh wow, you did it!");
-	mvwprintw(rose_success, 2, 1, "You're my hero <3");
-	mvwprintw(rose_success, 4, 1, "<exit>");
-	int rose_success_choices[1] = {4};
-	int rose_success_choices_size = 1;
 
 	gs.obtained_treasure = 0;
 
 	mvwaddch(gs.map, 9, 25, '@'); //rose
-	
+
 	//input loop
 	char in;
 	do {
@@ -209,9 +161,9 @@ int main() {
 			}
 		} else { //free movement
 			//refresh the screen
-			
+
 			debug(gs.log_win,1,std::to_string( gs.enemies.count() ));
-			
+
 			for(int i=1; i<(x-log_width)-2; i++) {
 				mvwaddch(gs.hp_win,1,i,' ');
 			}
@@ -221,14 +173,14 @@ int main() {
 			if(mvwinch(gs.dan.getgrid(),gs.pc.ypos,gs.pc.xpos) == '$') {
 				wprintw(gs.log_win,"\nYou see a dollar sign on the floor. Press 'g' to pick it up.");
 			}
-			
+
 			gs.enemies.draw(gs.map);
 
 			prefresh(gs.map,gs.ypos,gs.xpos,map_start_y,map_start_x,map_start_y+map_size_y-1,map_start_x+map_size_x-1);
 			wrefresh(gs.log_win);
 			wrefresh(gs.hp_win);
 
-			
+
 			//player input & handling
 			in = getch();
 			switch(in) {
@@ -278,7 +230,7 @@ int main() {
 				for(int i=0; i<SPAWN_ATTEMPTS; i++) {
 					if( gs.enemies.add_unit(gs.map, 7, 7+rand()%5, 37+rand()%9) == 0) break;
 				}
-			}	
+			}
 		} else {
 			debug(gs.log_win,0,"some enemies");
 			while( curr != NULL ) {
@@ -298,7 +250,7 @@ int main() {
 					move_enemy(gs.map, gs.dan.getgrid(), &curr->data, curr->data.ypos, curr->data.xpos+1);
 					break;
 				}
-				
+
 				if( curr->next == NULL ) {
 					debug(gs.log_win,0,"spawn a new enemy?");
 					//chance to spawn new enemy
@@ -311,7 +263,7 @@ int main() {
 								break;
 							}
 						}
-					}	
+					}
 				}
 				curr = curr->next;
 			}
