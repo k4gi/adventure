@@ -1,3 +1,6 @@
+#ignore binaries
+adven mapgen bravo
+
 #ignore vim temp files
 *.swp
 
