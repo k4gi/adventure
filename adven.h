@@ -29,6 +29,8 @@ struct game_state {
 };
 
 void debug(WINDOW *win,int level,std::string input);
+int alpha();
+int bravo();
 int main();
 
 #endif

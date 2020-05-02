@@ -45,7 +45,7 @@ void char_movement(game_state *game, int ydes, int xdes) {
 	}
 }
 
-int main() {
+int alpha() {
 	initscr();
 	cbreak();
 	noecho();
@@ -273,4 +273,13 @@ int main() {
 	//wgetch(view); //wait
 	endwin();
 	return 0;
+}
+
+int bravo() {
+	//code goes here buddy
+	
+}
+
+int main() {
+	return bravo();
 }
