@@ -29,9 +29,9 @@ int bravo() {
 			for( int j=0; j < grid_x; j++ ) {
 				//wowow here we are printing floors and players and nothing else
 				if( i == pc_y && j == pc_x) {
-					mvaddch(j,i,'q');
+					mvaddch(i,j,'q');
 				} else {
-					mvaddch(j,i,'.');
+					mvaddch(i,j,'.');
 				}
 			}
 		}
