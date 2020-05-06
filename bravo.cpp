@@ -23,10 +23,14 @@ int bravo() {
 	int pc_y = 4;
 	int pc_x = 4;
 
+	dialog helloyes;
+
+	//unsigned int wait_time = 500;
+
 	//game starts actually happening here
 	
 	printw("For longer than anyone can remember a war has been raged between the Good Guys and the Bad Guys.\n");
-	usleep(500);
+	//usleep(wait_time);
 	printw("We're so lucky to have you here.\n\n(press any key)");
 	getch();
 

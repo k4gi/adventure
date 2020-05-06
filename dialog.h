@@ -29,9 +29,9 @@ class dialog {
 public:
 	dialog();
 	dialog(WINDOW *win, int choices[], int choices_size);
-	dialog(int height, int width, std::str lines[], int lines_size, int choices[], int choices_size);
+	dialog(int height, int width, std::string lines[], int lines_size, int choices[], int choices_size);
 	void add_win(WINDOW *win, int choices[], int choices_size);
-	void add_win(int height, int width, std::str lines[], int lines_size, int choices[], int choices_size);
+	void add_win(int height, int width, std::string lines[], int lines_size, int choices[], int choices_size);
 	void pop_win();
 	int select();
 	void move_up();

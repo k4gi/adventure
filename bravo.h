@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <string>
 #include <unistd.h>
+#include "dialog.h"
 
 int bravo();
 int main();

@@ -33,7 +33,7 @@ dialog::dialog(WINDOW *win, int choices[], int choices_size) {
 	top = new_node;
 }
 
-dialog::dialog(int height, int width, std::str lines[], int lines_size, int choices[], int choices_size) {
+dialog::dialog(int height, int width, std::string lines[], int lines_size, int choices[], int choices_size) {
 	dialog_win *new_node = new dialog_win;
 
 	WINDOW *new_win = newwin(height, width, 10, 10);
@@ -60,7 +60,7 @@ void dialog::add_win(WINDOW *win, int choices[], int choices_size) {
 	top = new_node;
 }
 
-void dialog::add_win(int height, int width, std::str lines[], int lines_size, int choices[], int choices_size) {
+void dialog::add_win(int height, int width, std::string lines[], int lines_size, int choices[], int choices_size) {
 	dialog_win *new_node = new dialog_win;
 
 	WINDOW *new_win = newwin(height, width, 10, 10);
