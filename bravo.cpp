@@ -29,10 +29,15 @@ int bravo() {
 
 	//game starts actually happening here
 	
-	printw("For longer than anyone can remember a war has been raged between the Good Guys and the Bad Guys.\n");
+	printw("For longer than anyone can remember a war has raged between the Good Guys and the Bad Guys.\n");
 	//usleep(wait_time);
 	printw("We're so lucky to have you here.\n\n(press any key)");
 	getch();
+
+	//dialog testing
+	std::string dilines[] = {"Line 1", "Line 2", "Line3", "Line4", "Line5", "Line6"};
+	int dich[] = {4,5};
+	helloyes = dialog(6, 20, dilines, 6, dich, 2);
 
 	char input = ' ';
 	while( input != 'q' ) {
