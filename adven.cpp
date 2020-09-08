@@ -25,7 +25,7 @@ int main() {
 	noecho();
 	curs_set(0);
 
-	srand(0); //seed random generator
+	srand(0); //seed random generator. with zero. every day.
 	
 	int y,x;
 	getmaxyx(stdscr,y,x);
