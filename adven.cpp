@@ -227,12 +227,12 @@ int main() {
 				break;
 			//char movement down here
 			case 'w':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
+				switch( move_player(log_win, map, dan.getgrid(), &pc, pc.ypos-1, pc.xpos) ) {
 				case 0:
 					if(ypos>0 && pc.ypos+1 -ypos +map_start_y == map_size_y/2) ypos --;
 					break;
 				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
+					//wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
 					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos-1, pc.xpos) ) ) {
@@ -263,12 +263,12 @@ int main() {
 				}
 				break;
 			case 's':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
+				switch( move_player(log_win, map, dan.getgrid(), &pc, pc.ypos+1, pc.xpos) ) {
 				case 0:
 					if(ypos+map_size_y < dan.gety() && pc.ypos-1 -ypos +map_start_y == map_size_y/2) ypos ++;
 					break;
 				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
+					//wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
 					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos+1, pc.xpos) ) ) {
@@ -299,12 +299,12 @@ int main() {
 				}
 				break;
 			case 'a':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
+				switch( move_player(log_win, map, dan.getgrid(), &pc, pc.ypos, pc.xpos-1) ) {
 				case 0:
 					if(xpos>0 && pc.xpos+1 -xpos +map_start_x == map_size_x/2) xpos --;
 					break;
 				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
+					//wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
 					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos-1) ) ) {
@@ -335,12 +335,12 @@ int main() {
 				}
 				break;
 			case 'd':
-				switch( move_player(map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
+				switch( move_player(log_win, map, dan.getgrid(), &pc, pc.ypos, pc.xpos+1) ) {
 				case 0:
 					if(xpos+map_size_x < dan.getx() && pc.xpos-1 -xpos +map_start_x == map_size_x/2) xpos ++;
 					break;
 				case 1:
-					wprintw(log_win,"\nYou bonk into the wall!");
+					//wprintw(log_win,"\nYou bonk into the wall!");
 					break;
 				case 2:
 					switch( attack(log_win, &pc, enemies.find_unit(pc.ypos, pc.xpos+1) ) ) {

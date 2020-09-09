@@ -1,9 +1,10 @@
 #include "unit.h"
 
-int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos) {
+int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos) {
 	switch( mvwinch(map, t_ypos, t_xpos) ) {
 	case '#':
 		//wall
+		wprintw(log,"\nYou stub your toe on the wall.");
 		return 1;
 	case '7':
 		//attack

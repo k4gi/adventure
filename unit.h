@@ -25,7 +25,7 @@ int move_player returns
 2 for attack action
 3 for chat with npc
 */
-int move_player(WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
+int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
 int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
 
 /*
