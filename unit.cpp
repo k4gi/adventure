@@ -11,6 +11,8 @@ int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos
 		return 2;
 	case '@':
 		//chat
+		//oh so the code for the 'dialog system' should run in here.
+		//a function that hands over the t_ypos and t_xpos
 		return 3;
 	default:
 		mvwaddch(map, player->ypos, player->xpos, mvwinch(grid, player->ypos, player->xpos) );
