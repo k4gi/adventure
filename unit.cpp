@@ -1,5 +1,6 @@
 #include "unit.h"
 
+//move_player should have sooo much more stuff happening in here, rather than passing return values straight to adven.cpp
 int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos) {
 	switch( mvwinch(map, t_ypos, t_xpos) ) {
 	case '#':
@@ -14,6 +15,24 @@ int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos
 		//oh so the code for the 'dialog system' should run in here.
 		//a function that hands over the t_ypos and t_xpos
 		return 3;
+	case '&':
+		//sack of rice
+		//uuhhh this seems like a good place to start in adding more content
+		wprintw(log,"\nThis is a bag of rice. Do you want to eat from it?\n(press y to eat, anything else to cancel.");
+		char inputcharacter;
+		do {
+			inputcharacter = wgetch(log);
+			switch(inputcharacter) {
+			case 'y':
+				wprintw(log,"\nNom nom. Tasty rice.");
+				player->hp = 100;
+				return 4;
+			default:
+				wprintw(log,"\nNo rice for you then.");
+				return 5;
+
+			}
+		} while( inputcharacter != 'q' );
 	default:
 		mvwaddch(map, player->ypos, player->xpos, mvwinch(grid, player->ypos, player->xpos) );
 		player->ypos = t_ypos;

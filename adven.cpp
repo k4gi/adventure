@@ -258,6 +258,10 @@ int main() {
 						dialog_level = 1;
 					}
 					break;
+				case 4:
+				case 5:
+					//i don't care about rice here
+					break;
 				default:
 					debug(log_win,99,"Something broke...");
 				}
@@ -293,6 +297,10 @@ int main() {
 						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
 						dialog_level = 1;
 					}
+					break;
+				case 4:
+				case 5:
+					//rice
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
@@ -330,6 +338,10 @@ int main() {
 						dialog_level = 1;
 					}
 					break;
+				case 4:
+				case 5:
+					//rice
+					break;
 				default:
 					debug(log_win,99,"Something broke...");
 				}
@@ -365,6 +377,10 @@ int main() {
 						di.add_win(talk_to_rose, talk_to_rose_choices, talk_to_rose_choices_size);
 						dialog_level = 1;
 					}
+					break;
+				case 4:
+				case 5:
+					//rice
 					break;
 				default:
 					debug(log_win,99,"Something broke...");
