@@ -26,7 +26,9 @@ int move_player returns
 3 for chat with npc
 4 for eaating rice
 5 for not eating rice
+6 for taking from chest
 */
+
 int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
 int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
 

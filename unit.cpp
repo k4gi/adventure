@@ -2,6 +2,7 @@
 
 //move_player should have sooo much more stuff happening in here, rather than passing return values straight to adven.cpp
 int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos) {
+	bool emptychest = false;
 	switch( mvwinch(map, t_ypos, t_xpos) ) {
 	case '#':
 		//wall
@@ -33,6 +34,15 @@ int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos
 
 			}
 		} while( inputcharacter != 'q' );
+	case '=':
+		//chest
+		wprintw(log,"\nYou see a chest.");
+		if( !emptychest ) {
+			wprintw(log,"\nYou reach in to take something...");
+			//would this part of the program know which items are in which chests?
+			return 6;
+		}
+		return 1; // bonk
 	default:
 		mvwaddch(map, player->ypos, player->xpos, mvwinch(grid, player->ypos, player->xpos) );
 		player->ypos = t_ypos;
