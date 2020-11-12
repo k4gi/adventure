@@ -71,6 +71,26 @@ int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos) {
 	}
 }
 
+//just like, popping this here. If I want to work out how to make changes, I . . . need to try and make changes.
+int move_creep(WINDOW *map, WINDOW *grid, unit *creep, int t_ypos, int t_xpos) {
+	switch( mvwinch(map, t_ypos, t_xpos) ) {
+	case '#':
+	case '+':
+	case '7':
+	case 'c':
+	case '@':
+		//wall
+		return 1;
+	case '.':
+	default:
+		mvwaddch(map, enemy->ypos, enemy->xpos, mvwinch(grid, enemy->ypos, enemy->xpos) );
+		enemy->ypos = t_ypos;
+		enemy->xpos = t_xpos;
+		mvwaddch(map, enemy->ypos, enemy->xpos, enemy->sym);
+		return 0;
+	}
+}
+
 int attack(WINDOW *log, unit *attacker, unit *defender) {
 	defender->hp -= attacker->dmg;
 	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",attacker->name.c_str(),attacker->dmg,defender->name.c_str(),defender->hp);
