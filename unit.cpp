@@ -81,6 +81,13 @@ int move_creep(WINDOW *map, WINDOW *grid, unit *creep, int t_ypos, int t_xpos) {
 	case '@':
 		//wall
 		return 1;
+	case '>':
+	case 'v':
+	case '<':
+	case '^':
+	case 'x':
+	// these five above >v<^x constitute a basic track for this guy to follow.
+	// I don't know how to make it happen though. That's next.
 	case '.':
 	default:
 		mvwaddch(map, enemy->ypos, enemy->xpos, mvwinch(grid, enemy->ypos, enemy->xpos) );
