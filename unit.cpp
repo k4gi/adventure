@@ -72,29 +72,94 @@ int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos) {
 }
 
 //just like, popping this here. If I want to work out how to make changes, I . . . need to try and make changes.
-int move_creep(WINDOW *map, WINDOW *grid, unit *creep, int t_ypos, int t_xpos) {
-	switch( mvwinch(map, t_ypos, t_xpos) ) {
-	case '#':
-	case '+':
-	case '7':
-	case 'c':
-	case '@':
-		//wall
-		return 1;
-	case '>':
-	case 'v':
-	case '<':
-	case '^':
-	case 'x':
-	// these five above >v<^x constitute a basic track for this guy to follow.
-	// I don't know how to make it happen though. That's next.
-	case '.':
+int move_creep(WINDOW *map, WINDOW *grid, unit *creep) {
+	switch( mvwinch(grid, creep->ypos, creep->xpos) ) {
+	case '>': //move right
+		switch( mvwinch(map, creep->ypos, creep->xpos+1) ) {
+		case '>':
+		case 'v':
+		case '<':
+		case '^':
+		case 'x':
+			//it's ok to move bc we're not going off the track
+			mvwaddch(map, creep->ypos, creep->xpos, mvwinch(grid, creep->ypos, creep->xpos) );
+			creep->xpos += 1;
+			mvwaddch(map, creep->ypos, creep->xpos, creep->sym);
+			return 3;
+		default:
+			//you fool you've run off the track
+			//where's my goddamn debug function
+			//sigh
+			return 1;
+		}
+		break;
+	case 'v': //move down
+		switch( mvwinch(map, creep->ypos+1, creep->xpos) ) {
+		case '>':
+		case 'v':
+		case '<':
+		case '^':
+		case 'x':
+			//it's ok to move bc we're not going off the track
+			mvwaddch(map, creep->ypos, creep->xpos, mvwinch(grid, creep->ypos, creep->xpos) );
+			creep->ypos += 1;
+			mvwaddch(map, creep->ypos, creep->xpos, creep->sym);
+			return 6;
+		default:
+			//you fool you've run off the track
+			//where's my goddamn debug function
+			//sigh
+			return 1;
+		}
+		break;
+	case '<': //move left
+		switch( mvwinch(map, creep->ypos, creep->xpos-1) ) {
+		case '>':
+		case 'v':
+		case '<':
+		case '^':
+		case 'x':
+			//it's ok to move bc we're not going off the track
+			mvwaddch(map, creep->ypos, creep->xpos, mvwinch(grid, creep->ypos, creep->xpos) );
+			creep->xpos -= 1;
+			mvwaddch(map, creep->ypos, creep->xpos, creep->sym);
+			return 9;
+		default:
+			//you fool you've run off the track
+			//where's my goddamn debug function
+			//sigh
+			return 1;
+		}
+		break;
+	case '^': //move up
+		switch( mvwinch(map, creep->ypos-1, creep->xpos) ) {
+		case '>':
+		case 'v':
+		case '<':
+		case '^':
+		case 'x':
+			//it's ok to move bc we're not going off the track
+			mvwaddch(map, creep->ypos, creep->xpos, mvwinch(grid, creep->ypos, creep->xpos) );
+			creep->ypos -= 1;
+			mvwaddch(map, creep->ypos, creep->xpos, creep->sym);
+			return 12;
+		default:
+			//you fool you've run off the track
+			//where's my goddamn debug function
+			//sigh
+			return 1;
+		}
+		break;
+	case 'x': //destination
+		//special one-time offer of moving right to start moving through the test track again
+		//ordinarily uhhh... doing damage to the player? idk
+		mvwaddch(map, creep->ypos, creep->xpos, mvwinch(grid, creep->ypos, creep->xpos) );
+		creep->xpos += 1;
+		mvwaddch(map, creep->ypos, creep->xpos, creep->sym);
+		return 3;
 	default:
-		mvwaddch(map, enemy->ypos, enemy->xpos, mvwinch(grid, enemy->ypos, enemy->xpos) );
-		enemy->ypos = t_ypos;
-		enemy->xpos = t_xpos;
-		mvwaddch(map, enemy->ypos, enemy->xpos, enemy->sym);
-		return 0;
+		//we're off the track. there's nowhere to go. do nothing.
+		return 1;
 	}
 }
 
