@@ -43,6 +43,14 @@ int main() {
 
 	unit_list enemies = unit_list();
 
+	unit ant;
+	ant.name = "creepy creep";
+	ant.sym = 'c';
+	ant.ypos = 9;
+	ant.xpos = 55;
+	ant.hp = 9;
+	ant.dmg = 1;
+
 	map_loader dan;
 
 	int log_width = 40, hp_height = 3; //size of the hud
@@ -439,6 +447,10 @@ int main() {
 				curr = curr->next;
 			}
 		}
+
+		//creep action
+		move_creep(map, dan.getgrid(), &ant);
+
 	} while(in != 'q');
 
 	//wgetch(view); //wait

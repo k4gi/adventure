@@ -71,7 +71,6 @@ int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos) {
 	}
 }
 
-//just like, popping this here. If I want to work out how to make changes, I . . . need to try and make changes.
 int move_creep(WINDOW *map, WINDOW *grid, unit *creep) {
 	switch( mvwinch(grid, creep->ypos, creep->xpos) ) {
 	case '>': //move right
