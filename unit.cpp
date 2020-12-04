@@ -162,6 +162,10 @@ int move_creep(WINDOW *map, WINDOW *grid, unit *creep) {
 	}
 }
 
+int aim_tower(WINDOW *map, WINDOW *grid, unit *tower) {
+	//just putting this empty function here so i can get something done today
+}
+
 int attack(WINDOW *log, unit *attacker, unit *defender) {
 	defender->hp -= attacker->dmg;
 	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",attacker->name.c_str(),attacker->dmg,defender->name.c_str(),defender->hp);

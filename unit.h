@@ -32,7 +32,7 @@ int move_player returns
 int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
 int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
 int move_creep(WINDOW *map, WINDOW *grid, unit *creep);
-
+int aim_tower(WINDOW *map, WINDOW *grid, unit *tower);
 /*
 int attack returns
 0 for inconclusive round
