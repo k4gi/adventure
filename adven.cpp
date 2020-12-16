@@ -43,13 +43,7 @@ int main() {
 
 	unit_list enemies = unit_list();
 
-	unit ant;
-	ant.name = "creepy creep";
-	ant.sym = 'c';
-	ant.ypos = 9;
-	ant.xpos = 55;
-	ant.hp = 9;
-	ant.dmg = 1;
+	unit_list creeps = unit_list();
 
 	map_loader dan;
 
@@ -73,6 +67,8 @@ int main() {
 	WINDOW *map = dan.load_map(FILENAME);
 	
 	mvwaddch(map,pc.ypos,pc.xpos,pc.sym);
+
+	debug(log_win, 2, std::to_string( creeps.add_unit(map, 8, 9, 56) ) ); //testing creep
 
 	wprintw(log_win,"Welcome to Jason's roguelike, <adven.cpp>!");
 
@@ -449,7 +445,11 @@ int main() {
 		}
 
 		//creep action
-		move_creep(map, dan.getgrid(), &ant);
+		curr = creeps.gethead();
+		while( curr != NULL ) {
+			move_creep(map, dan.getgrid(), &curr->data);
+			curr = curr->next;
+		}
 
 	} while(in != 'q');
 

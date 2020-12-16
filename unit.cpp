@@ -164,6 +164,7 @@ int move_creep(WINDOW *map, WINDOW *grid, unit *creep) {
 
 int aim_tower(WINDOW *map, WINDOW *grid, unit *tower) {
 	//just putting this empty function here so i can get something done today
+	return 0;
 }
 
 int attack(WINDOW *log, unit *attacker, unit *defender) {
@@ -189,13 +190,28 @@ unit_list::unit_list() {
 }
 
 int unit_list::add_unit(WINDOW *map, int type, int ypos, int xpos) {
-	if( mvwinch(map, ypos, xpos) != '.' ) return 1;
+	switch( mvwinch(map, ypos, xpos) ) {
+	case '.':
+	case '<':
+	case '>':
+	case 'v':
+	case '^':
+		break;
+	default:
+		return 1;
+	}
 	unit_node *new_enemy = new unit_node;
 	new_enemy->data.ypos = ypos;
 	new_enemy->data.xpos = xpos;
 	new_enemy->next = NULL;
 
 	switch(type) {
+	case 8:
+		new_enemy->data.name = "ant";
+		new_enemy->data.sym = 'a';
+		new_enemy->data.hp = 9;
+		new_enemy->data.dmg = 1;
+		break;
 	case 7:
 	default:
 		new_enemy->data.name = "seven";
