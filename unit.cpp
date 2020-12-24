@@ -162,15 +162,46 @@ int move_creep(WINDOW *map, WINDOW *grid, unit *creep) {
 	}
 }
 
-int aim_tower(WINDOW *map, WINDOW *grid, unit *tower) {
-	//just putting this empty function here so i can get something done today
+int aim_tower(WINDOW *log, WINDOW *map, WINDOW *grid, unit *tower, unit_list *creeps) {
+	//i imagine there should be several kinds of tower
+	//but for now lets make one that fires one space in all eight directions
+	//like a tack shooter
+	if( mvwinch( map, tower->ypos-1, tower->xpos-1 ) == 'c' ) {
+		if( aim_tower_attack(&log, *tower, creeps.find_unit(tower->ypos-1, tower->xpos-1) ) == 2 ) {
+			creeps.delete_unit(tower->ypos-1, tower->xpos-1);
+			mvwaddch(map, tower->ypos-1, tower->xpos-1, mvwinch(grid, tower->ypos-1, tower->xpos-1) );
+		}
+	}
+	if( mvwinch( map, tower->ypos-1, tower->xpos ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos-1, tower->xpos+1 ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos, tower->xpos-1 ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos, tower->xpos+1 ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos+1, tower->xpos-1 ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos+1, tower->xpos ) == 'c' ) {
+	}
+	if( mvwinch( map, tower->ypos+1, tower->xpos+1 ) == 'c' ) {
+	}
 	return 0;
+}
+
+int aim_tower_attack(WINDOW *log, unit *tower, unit *creep) {
+	creep->hp -= tower->dmg;
+	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",tower->name.c_str(),tower->dmg,creep->name.c_str(),creep->hp);
+	if(creep->hp <= 0) 
+		wprintw(log,"\nThe %s is defeated!",creep->name.c_str());
+		return 2;
+	}
 }
 
 int attack(WINDOW *log, unit *attacker, unit *defender) {
 	defender->hp -= attacker->dmg;
 	wprintw(log,"\nThe %s strikes for %d, reducing the %s to %d HP!",attacker->name.c_str(),attacker->dmg,defender->name.c_str(),defender->hp);
-	if(defender->hp <= 0) {
+	if(defender->hp <= 0) 
 		wprintw(log,"\nThe %s is defeated!",defender->name.c_str());
 		return 2;
 	} else {
