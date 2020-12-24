@@ -18,29 +18,6 @@ struct unit_node {
 	unit_node *next;
 };
 
-/*
-int move_player returns
-0 for successful movement
-1 for no movement
-2 for attack action
-3 for chat with npc
-4 for eaating rice
-5 for not eating rice
-6 for taking from chest
-*/
-
-int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
-int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
-int move_creep(WINDOW *map, WINDOW *grid, unit *creep);
-int aim_tower(WINDOW *map, WINDOW *grid, unit *tower);
-/*
-int attack returns
-0 for inconclusive round
-1 for attacker losing
-2 for defender losing
-*/
-int attack(WINDOW *log, unit *attacker, unit *defender);
-
 class unit_list {
 	unit_node *head;
 public:
@@ -59,5 +36,30 @@ public:
 	void draw(WINDOW *map);
 	int count();
 };
+
+/*
+int move_player returns
+0 for successful movement
+1 for no movement
+2 for attack action
+3 for chat with npc
+4 for eaating rice
+5 for not eating rice
+6 for taking from chest
+*/
+
+int move_player(WINDOW *log, WINDOW *map, WINDOW *grid, unit *player, int t_ypos, int t_xpos);
+int move_enemy(WINDOW *map, WINDOW *grid, unit *enemy, int t_ypos, int t_xpos);
+int move_creep(WINDOW *map, WINDOW *grid, unit *creep);
+int aim_tower(WINDOW *log, WINDOW *map, WINDOW *grid, unit *tower, unit_list creeps);
+
+/*
+int attack returns
+0 for inconclusive round
+1 for attacker losing
+2 for defender losing
+*/
+int attack(WINDOW *log, unit *attacker, unit *defender);
+int aim_tower_attack(WINDOW *log, unit *tower, unit *creep);
 
 #endif
