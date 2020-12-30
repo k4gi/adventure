@@ -6,18 +6,10 @@
 #include "unit.h"
 #include "roman.h"
 #include "dialog.h"
+#include "debug.h"
 
 #define FILENAME "testing_map.dat"
 #define SPAWN_ATTEMPTS 5
-
-#define DEBUGGING true
-#define DEBUGGING_LEVEL 2
-
-void debug(WINDOW *win,int level,std::string input) {
-	if(DEBUGGING && level >= DEBUGGING_LEVEL) {
-		wprintw(win,"\ndebug:%s",input.c_str());
-	}
-}
 
 int main() {
 	initscr();
