@@ -4,6 +4,8 @@
 #include <ncurses.h>
 #include <string>
 
+#include "debug.h"
+
 struct unit {
 	std::string name;
 	char sym;
